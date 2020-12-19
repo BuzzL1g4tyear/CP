@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CP</string>
+    <string name="createBTN">Добавить</string>
+    <string name="readBTN">Прочитать</string>
+    <string name="numTXT">Number</string>
+    <string name="nameTXT">Name</string>
+</resources>
