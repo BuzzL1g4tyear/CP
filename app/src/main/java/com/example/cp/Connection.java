@@ -1,5 +1,5 @@
 package com.example.cp;
 
-public class Connection {
+public class Connection{
 
 }
