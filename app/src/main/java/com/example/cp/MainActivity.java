@@ -1,6 +1,7 @@
 package com.example.cp;
 
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,7 +41,20 @@ public class MainActivity extends AppCompatActivity {
         textName = findViewById(R.id.txtName);
         List = findViewById(R.id.listView);
     }
-    public final class AsyncRequest extends AsyncTask<String, Void, JSONArray> {
+
+    @SuppressLint("StaticFieldLeak")
+    public final class ShowAll extends AsyncTask<String, Void, JSONArray> {
+
+        String num, name;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            name = textName.getText().toString();
+            num = textNum.getText().toString();
+        }
+
         protected JSONArray doInBackground(String... query) {
 
             JSONArray resultSet = new JSONArray();
@@ -69,10 +83,17 @@ public class MainActivity extends AppCompatActivity {
 
             return resultSet;
         }
+        public void AllItems(){
+
+        }
     }
     public void onClickAdd(View view) {
 
+    }
 
+    public void onClickRead(View view) {
+        ShowAll show = new ShowAll();
+        show.execute("");
     }
 
     public void Toast(String mess) {

@@ -20,7 +20,7 @@ public class ConnectionHelper {
     public Connection getCon() {
 
         Connection con = null;
-        String ConnURL = "jdbc:jtds:sqlserver://" + SERVER + ":" + PORT + ":/" + DBNAME+";";
+        String ConnURL = "jdbc:jtds:sqlserver://" + SERVER + ":" + PORT + ":/" + DBNAME;
 
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
