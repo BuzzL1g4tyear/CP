@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -75,16 +74,16 @@ public class MainActivity extends AppCompatActivity {
                             rowObject.put(rs.getMetaData().getColumnName(i), (rs.getString(i) != null) ? rs.getString(i) : "");
                         }
                         resultSet.put(rowObject);
-                        for (int i=0;i<resultSet.length();i++){
+                        for (int i = 0; i < resultSet.length(); i++) {
                             ItemsList.add(resultSet.getString(i));
                         }
                     }
-                    adapter = new ArrayAdapter<>(MainActivity.this,android.R.layout.simple_list_item_1,ItemsList);
+                    adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
                     adapter.notifyDataSetChanged();
                 }
             } catch (SQLException | JSONException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 try {
                     if (rs != null) rs.close();
                     if (st != null) st.close();
