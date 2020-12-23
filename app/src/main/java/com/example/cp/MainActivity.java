@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 st = connection.createStatement();
                 rs = st.executeQuery(SHOWALL);
-                ConnectionHelper helper;
+
                 if (rs != null) {
                     while (rs.next()) {
                         int columnCount = rs.getMetaData().getColumnCount();
