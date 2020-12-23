@@ -17,6 +17,10 @@ public class ConnectionHelper {
     private String num;
     private String name;
 
+    public ConnectionHelper() {
+
+    }
+
     public Connection getCon() {
 
         Connection con = null;
@@ -36,4 +40,9 @@ public class ConnectionHelper {
         return con;
     }
 
+    public ConnectionHelper(int id, String num, String name) {
+        this.id = id;
+        this.num = num;
+        this.name = name;
+    }
 }
