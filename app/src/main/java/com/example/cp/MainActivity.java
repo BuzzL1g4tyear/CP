@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String SHOWQ = "SELECT * FROM CATALOG";
     public static final String ADDQ = "INSERT INTO CATALOG (id, Number, Name) VALUES (?,?,?)";
 
-    ArrayList<String> ItemsList = new ArrayList<String>();
+    ArrayList<String> ItemsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,28 +53,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
         }
 
         protected JSONArray doInBackground(String... query) {
 
             JSONArray resultSet = new JSONArray();
-            JSONObject rowObject = new JSONObject();
 
             try {
                 st = connection.createStatement();
                 rs = st.executeQuery(SHOWQ);
 
                 if (rs != null) {
+                    int columnCount = rs.getMetaData().getColumnCount();
                     while (rs.next()) {
-                        int columnCount = rs.getMetaData().getColumnCount();
+                        JSONObject rowObject = new JSONObject();
                         for (int i = 1; i <= columnCount; i++) {
                             rowObject.put(rs.getMetaData().getColumnName(i), (rs.getString(i) != null) ? rs.getString(i) : "");
                         }
                         resultSet.put(rowObject);
-                        for (int i = 0; i < resultSet.length(); i++) {
-                            ItemsList.add(resultSet.getString(i));
-                        }
+                    }
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        ItemsList.add(resultSet.getString(i));
                     }
                     adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
                     adapter.notifyDataSetChanged();
@@ -91,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return resultSet;
         }
-
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     ps = connection.prepareStatement(ADDQ);
 
                     ps.setInt(1, id);
-                    ps.setString(2,num);
+                    ps.setString(2, num);
                     ps.setString(3, name);
                     ps.addBatch();
                     ps.execute();
@@ -149,13 +147,13 @@ public class MainActivity extends AppCompatActivity {
         InsertCat insertCat = new InsertCat();
         insertCat.execute("");
         ShowCat show = new ShowCat();
-        show.execute("");
+        show.execute();
         Toast("Добавлено!");
     }
 
     public void onClickRead(View view) {
         ShowCat show = new ShowCat();
-        show.execute("");
+        show.execute();
         listView.setAdapter(adapter);
     }
 
