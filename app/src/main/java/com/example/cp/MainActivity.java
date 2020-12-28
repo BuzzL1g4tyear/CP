@@ -75,8 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < resultSet.length(); i++) {
                         ItemsList.add(resultSet.getString(i));
                     }
-                    adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
-                    adapter.notifyDataSetChanged();
+
                 }
             } catch (SQLException | JSONException e) {
                 e.printStackTrace();
@@ -145,15 +144,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickAdd(View view) {
         InsertCat insertCat = new InsertCat();
-        insertCat.execute("");
+        insertCat.execute();
         ShowCat show = new ShowCat();
         show.execute();
+        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
+        adapter.clear();
+        adapter.notifyDataSetChanged();
         Toast("Добавлено!");
     }
 
     public void onClickRead(View view) {
         ShowCat show = new ShowCat();
         show.execute();
+        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
+        adapter.clear();
+        adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }
 
