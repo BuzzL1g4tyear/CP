@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_db);
         textNum = findViewById(R.id.txtNum);
         textName = findViewById(R.id.txtName);
         textID = findViewById(R.id.ID_TXT);
