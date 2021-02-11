@@ -17,7 +17,7 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void onClickDB(View view){
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this, DbActivity.class);
         startActivity(intent);
     }
 }

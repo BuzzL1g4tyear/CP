@@ -154,8 +154,8 @@
 
     <EditText
         android:id="@+id/phoneTXT"
-        android:layout_width="134dp"
-        android:layout_height="35dp"
+        android:layout_width="141dp"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="numberSigned"

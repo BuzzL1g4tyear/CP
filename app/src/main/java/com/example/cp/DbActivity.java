@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class DbActivity extends AppCompatActivity {
 
     public EditText textNum, textName, textID;
     public ListView listView;
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         insertCat.execute();
         ShowCat show = new ShowCat();
         show.execute();
-        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
+        adapter = new ArrayAdapter<>(DbActivity.this, android.R.layout.simple_list_item_1, ItemsList);
         adapter.clear();
         adapter.notifyDataSetChanged();
         Toast("Добавлено!");
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickRead(View view) {
         ShowCat show = new ShowCat();
         show.execute();
-        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, ItemsList);
+        adapter = new ArrayAdapter<>(DbActivity.this, android.R.layout.simple_list_item_1, ItemsList);
         adapter.clear();
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
