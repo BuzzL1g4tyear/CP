@@ -1,6 +1,10 @@
 package com.example.cp;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -33,6 +37,7 @@ public class DbActivity extends AppCompatActivity {
     Statement st = null;
     ResultSet rs = null;
 
+    private static final String MY_SETTINGS = "my_settings";
     public static final String SHOWQ = "SELECT * FROM CATALOG";
     public static final String ADDQ = "INSERT INTO CATALOG (id, Number, Name) VALUES (?,?,?)";
 
@@ -161,6 +166,26 @@ public class DbActivity extends AppCompatActivity {
         adapter.clear();
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
+    }
+    public void onClickUnlog(View view) {
+        SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor e = sp.edit();
+        e.putBoolean("hasLogged", false);
+        e.apply();
+        Dialog("ОК!","Успешно вышли!");
+    }
+
+    private void Dialog(String title, String mes) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(mes);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public void Toast(String mess) {

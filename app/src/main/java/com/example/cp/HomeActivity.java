@@ -1,7 +1,9 @@
 package com.example.cp;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,38 +17,32 @@ import com.google.android.material.snackbar.Snackbar;
 public class HomeActivity extends AppCompatActivity {
 
     private static final String MY_SETTINGS = "my_settings";
+    boolean hasLogged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Snack("GG");
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
 
-        boolean hasVisited = sp.getBoolean("hasVisited", false);
+        hasLogged = sp.getBoolean("hasLogged", false);
 
-        if (!hasVisited) {
-            Toast("GG");
-            Snack("GG");
-            SharedPreferences.Editor e = sp.edit();
-            e.putBoolean("hasVisited", true);
-            e.apply(); // не забудьте подтвердить изменения
+        Intent intent;
+        if (hasLogged) {
+            intent = new Intent(this, DbActivity.class);
         }else {
-            Toast("123");
+            intent = new Intent(this, LoginActivity.class);
         }
+        startActivity(intent);
     }
 
     public void onClickReg(View view) {
-        Snack("GG");
-        Intent intent = new Intent(this, LoginActivity.class);
-
-        startActivity(intent);
+        Dialog("Activity",view.toString());
     }
 
     public void onClickDB(View view) {
-        Intent intent = new Intent(this, DbActivity.class);
-        startActivity(intent);
+        Dialog("Activity",view.toString());
     }
 
     public void Snack(String mes) {
@@ -54,6 +50,18 @@ public class HomeActivity extends AppCompatActivity {
         Snackbar snackbar = Snackbar
                 .make(activity_home, mes, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    private void Dialog(String title, String mes){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(mes);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public void Toast(String mess) {

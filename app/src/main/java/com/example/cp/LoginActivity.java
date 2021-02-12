@@ -1,7 +1,12 @@
 package com.example.cp;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -9,9 +14,25 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
+
 public class LoginActivity extends AppCompatActivity {
+    private static final String MY_SETTINGS = "my_settings";
+    private static final String CHECKQ = "SELECT * FROM LoginData WHERE Login = ? AND Password = ?";
+
     TextView loginText, PasText;
-    String u_name, u_fam, phone, login, Email, Pas;
+    String login, Pas;
+
+    ConnectionHelper connect = new ConnectionHelper();
+    Connection connection = connect.getCon();
+    PreparedStatement ps = null;
+    ResultSet rs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,16 +40,31 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-    public void onClickAdd(View view) {
+    public void onClickAdd(View view) throws ExecutionException, InterruptedException {
+        SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
+                Context.MODE_PRIVATE);
         loginText = (TextView) findViewById(R.id.LoginTXT);
         PasText = (TextView) findViewById(R.id.PasTXT);
-
 
         login = loginText.getText().toString();
         Pas = PasText.getText().toString();
 
-        if(CheckFields(u_name,u_fam,phone,login,Pas,Email)) {
-            Toast(u_fam + " " + u_name + " добавлен");
+        Intent intent;
+
+        if (CheckFields(login, Pas)) {
+            CheckUser checkUser = new CheckUser();
+            boolean status = checkUser.execute().get();
+            SharedPreferences.Editor e = sp.edit();
+            e.putBoolean("hasLogged", true);
+            e.apply();
+
+            if (status) {
+                intent = new Intent(this, DbActivity.class);
+                startActivity(intent);
+                Toast(login + " entered");
+            } else {
+                Snack(":(");
+            }
         }
     }
 
@@ -37,17 +73,17 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
-    private boolean CheckFields(String name, String fam, String phone, String login, String pas, String email) {
+    private boolean CheckFields(String login, String pas) {
         boolean field = true;
 
-        if (name.equals("") || fam.trim().equals("") || phone.isEmpty() ||
-                login.isEmpty() || pas.isEmpty() || email.isEmpty()) {
-            Dialog("Ошибка!","Заполните все поля!");
+        if (login.isEmpty() || pas.isEmpty()) {
+            Dialog("Ошибка!", "Заполните все поля!");
             field = false;
         }
         return field;
     }
-    private void Dialog(String title, String mes){
+
+    private void Dialog(String title, String mes) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title).setMessage(mes);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -57,5 +93,52 @@ public class LoginActivity extends AppCompatActivity {
         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void Snack(String mes) {
+        View activity_home = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar
+                .make(activity_home, mes, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public final class CheckUser extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            login = loginText.getText().toString();
+            Pas = PasText.getText().toString();
+        }
+
+        protected Boolean doInBackground(String... query) {
+
+            boolean resultSet = false;
+
+            try {
+                ps = connection.prepareStatement(CHECKQ);
+                ps.setString(1, login);
+                ps.setString(2, Pas);
+                rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    resultSet = true;
+                    Snack("Вошли!");
+                } else {
+                    Snack("Что-то капец");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (rs != null) rs.close();
+                    if (ps != null) ps.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+            return resultSet;
+        }
     }
 }
