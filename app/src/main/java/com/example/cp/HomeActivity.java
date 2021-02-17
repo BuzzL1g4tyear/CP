@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -25,20 +27,28 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
-
         hasLogged = sp.getBoolean("hasLogged", false);
-
         Intent intent;
-        if (hasLogged) {
-            intent = new Intent(this, DbActivity.class);
+
+        if(hasConnection(this)){
+            if (hasLogged) {
+                intent = new Intent(this, DbActivity.class);
+            }else {
+                intent = new Intent(this, LoginActivity.class);
+            }
+            startActivity(intent);
         }else {
-            intent = new Intent(this, LoginActivity.class);
+
         }
-        startActivity(intent);
     }
 
     public void onClickReg(View view) {
         Dialog("Activity",view.toString());
+    }
+
+    public void onClickShop(View view){
+        Intent intent = new Intent(this,shopActivity.class);
+        startActivity(intent);
     }
 
     public void onClickDB(View view) {
@@ -50,6 +60,27 @@ public class HomeActivity extends AppCompatActivity {
         Snackbar snackbar = Snackbar
                 .make(activity_home, mes, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    public static boolean hasConnection(final Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        return false;
     }
 
     private void Dialog(String title, String mes){
