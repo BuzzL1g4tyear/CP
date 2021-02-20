@@ -1,6 +1,5 @@
 package com.example.cp;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,18 +30,17 @@ public class HomeActivity extends AppCompatActivity {
         hasLogged = sp.getBoolean("hasLogged", false);
         Intent intent;
 
-        if(hasConnection(this)){
+        if (hasConnection(this)) {
             if (hasLogged) {
                 intent = new Intent(this, DbActivity.class);
-            }else {
+            } else {
                 intent = new Intent(this, LoginActivity.class);
             }
             startActivity(intent);
-        }else {
-
+        } else {
+            Dialog("Ошибка!", "Вы не подключились к Интернету!");
         }
     }
-
     public void onClickReg(View view) {
         Dialog("Activity",view.toString());
     }

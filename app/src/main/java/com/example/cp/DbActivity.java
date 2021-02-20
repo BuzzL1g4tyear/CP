@@ -81,7 +81,6 @@ public class DbActivity extends AppCompatActivity {
                     for (int i = 0; i < resultSet.length(); i++) {
                         ItemsList.add(resultSet.getString(i));
                     }
-
                 }
             } catch (SQLException | JSONException e) {
                 e.printStackTrace();
