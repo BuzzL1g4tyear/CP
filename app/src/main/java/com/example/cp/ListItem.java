@@ -2,7 +2,6 @@ package com.example.cp;
 
 public class ListItem {
 
-
     String Name;
     String Quantity;
     String Price;

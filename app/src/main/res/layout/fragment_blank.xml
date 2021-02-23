@@ -6,25 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp"
     tools:context=".BlankFragment">
 
     <EditText
         android:id="@+id/valueNumb"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/QuantityItemTXT"
         android:inputType="number"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
-        app:layout_constraintVertical_bias="0.045" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView3"
@@ -34,7 +33,7 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/btnMinus"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.046"
+        app:layout_constraintHorizontal_bias="0.193"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -44,40 +43,40 @@
         android:layout_width="56dp"
         android:layout_height="40dp"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:text="@string/minus"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/valueNumb"
         app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.078" />
+        app:layout_constraintVertical_bias="0.324" />
 
     <Button
         android:id="@+id/btnPlus"
         android:layout_width="58dp"
         android:layout_height="41dp"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:text="@string/plus"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.746"
         app:layout_constraintStart_toEndOf="@+id/valueNumb"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.078" />
+        app:layout_constraintVertical_bias="0.326" />
 
     <Button
         android:id="@+id/btnOK"
         android:layout_width="87dp"
         android:layout_height="47dp"
-        android:text="@string/OK"
+        android:layout_marginTop="44dp"
+        android:layout_marginBottom="10dp"
         android:background="@android:color/transparent"
+        android:text="@string/OK"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.895"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnPlus"
-        app:layout_constraintVertical_bias="0.22" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

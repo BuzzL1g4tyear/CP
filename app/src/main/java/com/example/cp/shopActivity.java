@@ -10,11 +10,15 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,9 +32,12 @@ public class shopActivity extends AppCompatActivity {
     private CustomArrayAdapter customArrayAdapter;
     private List<ListItem> arrayListItem;
 
-    public Button btnMin, btnPlu;
+    public Button btnMin, btnPlu, btnOK;
     public EditText text;
+
     private int count = 0;
+    public String quantity;
+    public String nameItem;
 
     public static final String SHOWQ = "SELECT * FROM STOCK";
 
@@ -53,20 +60,27 @@ public class shopActivity extends AppCompatActivity {
         ShowCat cat = new ShowCat();
         cat.execute();
 
-        openDialog("Проверка");
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                nameItem = arrayListItem.get(position).getName();
+
+                Log.d("MyTag",nameItem);
+
+                openDialog(nameItem);
+            }
+        });
     }
 
     public void openDialog(String title) {
-        Dialog dialog = new Dialog(this);
+        Dialog dialog = new Dialog(shopActivity.this, R.style.CustomStyleDialog);
         LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_blank,null);
-
-        dialog.setContentView(view);
-        dialog.setTitle(title);
+        View view = inflater.inflate(R.layout.fragment_blank, null);
 
         text = view.findViewById(R.id.valueNumb);
         btnMin = view.findViewById(R.id.btnMinus);
         btnPlu = view.findViewById(R.id.btnPlus);
+        btnOK = view.findViewById(R.id.btnOK);
 
         text.setText("0");
         btnMin.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +101,35 @@ public class shopActivity extends AppCompatActivity {
                 text.setText(translate);
             }
         });
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = text.getText().toString();
+                if (CheckFields(quantity)) {
+                    Toast(nameItem+" добавленно в корзину "+quantity);
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        dialog.setContentView(view);
+        dialog.setTitle(title);
         dialog.show();
+    }
+
+    public boolean CheckFields(String quantity) {
+        boolean field = true;
+
+        if ( quantity.equals(null)||quantity.isEmpty()) {
+            Toast("Ле-е-е, куда нажимаешь? Не видишь пусто!?");
+            field = false;
+        }
+        return field;
+    }
+
+    private void Toast(String mes) {
+        Toast.makeText(this, mes,
+                Toast.LENGTH_LONG).show();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -111,9 +153,9 @@ public class shopActivity extends AppCompatActivity {
                         ListItem items = new ListItem();
 
                         for (int i = columnCount; i <= columnCount; i++) {
-                            items.setName(rs.getString(1));
-                            items.setQuantity(rs.getString(2));
-                            items.setPrice(rs.getString(3));
+                            items.setName(rs.getString(2).trim());
+                            items.setQuantity(rs.getString(3));
+                            items.setPrice(rs.getString(4));
                             arrayListItem.add(items);
                             customArrayAdapter.notifyDataSetChanged();
                         }
