@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
                 Toast(login + " entered");
             } else {
-                Snack(":(");
+                Snack("Неверный логин или пароль");
             }
         }
     }
