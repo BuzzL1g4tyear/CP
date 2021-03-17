@@ -31,12 +31,10 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent;
 
         if (hasConnection(this)) {
-            if (hasLogged) {
-                intent = new Intent(this, DbActivity.class);
-            } else {
+            if (!hasLogged) {
                 intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
             }
-            startActivity(intent);
         } else {
             Dialog("Ошибка!", "Вы не подключились к Интернету!");
         }

@@ -16,6 +16,7 @@
     <string name="NameItemTXT">Название товара</string>
     <string name="QuantityItemTXT">Количество</string>
     <string name="PriceItemTXT">Цена</string>
+    <string name="basket">Корзина</string>
     <string name="quantityItemTXT">Введите количество</string>
     <string name="plus">+</string>
     <string name="minus">-</string>

@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             e.apply();
 
             if (status) {
-                intent = new Intent(this, DbActivity.class);
+                intent = new Intent(this, shopActivity.class);
                 startActivity(intent);
                 Toast(login + " entered");
             } else {
