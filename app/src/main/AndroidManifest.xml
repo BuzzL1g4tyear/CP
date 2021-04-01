@@ -12,7 +12,9 @@
         android:roundIcon="@mipmap/ic_cp_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".shopActivity" />
+        <activity android:name=".shopActivity"
+            android:theme="@style/shopStyle"
+            />
         <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

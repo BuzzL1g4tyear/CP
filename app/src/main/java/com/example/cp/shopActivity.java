@@ -1,6 +1,8 @@
 package com.example.cp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 
 
@@ -12,11 +14,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,12 +66,15 @@ public class shopActivity extends AppCompatActivity {
         ShowCat cat = new ShowCat();
         cat.execute();
 
+        Toolbar toolbarshop = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbarshop);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 nameItem = arrayListItem.get(position).getName();
 
-                Log.d("MyTag",nameItem);
+                Log.d("MyTag", nameItem);
 
                 openDialog(nameItem);
             }
@@ -106,12 +115,12 @@ public class shopActivity extends AppCompatActivity {
             public void onClick(View v) {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
-                    Toast(nameItem+" добавленно в корзину "+quantity);
+                    Toast(nameItem + " добавленно в корзину " + quantity);
                     dialog.dismiss();
                 }
             }
         });
-
+// поиск и фильтр, корзина
         dialog.setContentView(view);
         dialog.setTitle(title);
         dialog.show();
@@ -120,8 +129,8 @@ public class shopActivity extends AppCompatActivity {
     public boolean CheckFields(String quantity) {
         boolean field = true;
 
-        if ( quantity.equals(null)||quantity.isEmpty()) {
-            Toast("Ле-е-е, куда нажимаешь? Не видишь пусто!?");
+        if (quantity.equals(null) || quantity.isEmpty()) {
+            Toast("Пустое поле");
             field = false;
         }
         return field;
@@ -174,5 +183,28 @@ public class shopActivity extends AppCompatActivity {
             }
             return listItem;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.items_toolbar, menu);
+
+        MenuItem item = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                customArrayAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }
