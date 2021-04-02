@@ -10,17 +10,39 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
     private final LayoutInflater inflater;
     private List<ListItem> listItem = new ArrayList<>();
+    private List<ListItem> listItemCopy = new ArrayList<>();
 
-    public CustomArrayAdapter(@NonNull Context context, int resource, List<ListItem> listItem, LayoutInflater inflater) {
-        super(context, resource, listItem);
+    public CustomArrayAdapter(@NonNull Context context, int resource, List<ListItem> list, LayoutInflater inflater) {
+        super(context, resource, list);
+
+        listItemCopy.addAll(list);
+
         this.inflater = inflater;
-        this.listItem = listItem;
+        this.listItem = list;
+    }
+
+    public void filter(@NotNull String text) {
+        listItem.clear();
+        if (text.isEmpty()) {
+            listItem.addAll(listItemCopy);
+        } else {
+            text = text.toLowerCase();
+            for (ListItem item : listItemCopy) {
+                if (item.Name.toLowerCase().contains(text) || item.Price.toLowerCase().contains(text)
+                        || item.Quantity.toLowerCase().contains(text)) {
+                    listItem.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -28,7 +50,7 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder viewHolder;
         ListItem listItemMain = listItem.get(position);
-        if(convertView == null){
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_list, null, false);
             viewHolder = new ViewHolder();
             viewHolder.data1 = convertView.findViewById(R.id.nameTV);
@@ -36,8 +58,7 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
             viewHolder.data3 = convertView.findViewById(R.id.Price_TV);
             convertView.setTag(viewHolder);
 
-        }
-        else {
+        } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.data1.setText(listItemMain.getName());
@@ -46,11 +67,13 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
 
         return convertView;
     }
-    private class ViewHolder{
+
+    private class ViewHolder {
         TextView data1;
         TextView data2;
         TextView data3;
     }
+
 }
 
 

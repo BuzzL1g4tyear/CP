@@ -3,13 +3,10 @@ package com.example.cp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
-import androidx.fragment.app.Fragment;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.Connection;
@@ -66,8 +62,8 @@ public class shopActivity extends AppCompatActivity {
         ShowCat cat = new ShowCat();
         cat.execute();
 
-        Toolbar toolbarshop = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbarshop);
+        Toolbar toolbarShop = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbarShop);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -129,7 +125,7 @@ public class shopActivity extends AppCompatActivity {
     public boolean CheckFields(String quantity) {
         boolean field = true;
 
-        if (quantity.equals(null) || quantity.isEmpty()) {
+        if (quantity == null || quantity.isEmpty()) {
             Toast("Пустое поле");
             field = false;
         }
@@ -192,19 +188,26 @@ public class shopActivity extends AppCompatActivity {
 
         MenuItem item = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView.setQueryHint("Поиск");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            CustomArrayAdapter adapter = new CustomArrayAdapter(shopActivity.this,
+                    R.layout.item_list, arrayListItem, getLayoutInflater());
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                adapter.filter(query);
+                listView.setAdapter(adapter);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                customArrayAdapter.getFilter().filter(newText);
-                return false;
+                adapter.filter(newText);
+                listView.setAdapter(adapter);
+                return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
+
 }
