@@ -40,6 +40,7 @@ public class shopActivity extends AppCompatActivity {
     private int count = 0;
     public String quantity;
     public String nameItem;
+    public int valueItem;
 
     public static final String SHOWQ = "SELECT * FROM STOCK";
 
@@ -69,18 +70,19 @@ public class shopActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 nameItem = arrayListItem.get(position).getName();
+                valueItem = Integer.parseInt(arrayListItem.get(position).getQuantity());
 
-                Log.d("MyTag", nameItem);
+                Log.d("MyLog", nameItem);
 
-                openDialog(nameItem);
+                openDialog(nameItem, valueItem);
             }
         });
     }
 
-    public void openDialog(String title) {
+    public void openDialog(String title, int value) {
         Dialog dialog = new Dialog(shopActivity.this, R.style.CustomStyleDialog);
         LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_blank, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.fragment_blank, null);
 
         text = view.findViewById(R.id.valueNumb);
         btnMin = view.findViewById(R.id.btnMinus);
@@ -91,19 +93,32 @@ public class shopActivity extends AppCompatActivity {
         btnMin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                count = Integer.parseInt(text.getText().toString());
-                count = count - 1;
-                String translate = String.valueOf(count);
-                text.setText(translate);
+                if (Integer.parseInt(text.getText().toString()) > 0) {
+
+                    if (text.getText().toString().trim().isEmpty()) {
+                        text.setText("0");
+                    }
+
+                    count = Integer.parseInt(text.getText().toString());
+                    count = count - 1;
+                    String translate = String.valueOf(count);
+                    text.setText(translate);
+                } else {
+                    Toast("Нельзя выбрать число меньше!");
+                }
             }
         });
         btnPlu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 count = Integer.parseInt(text.getText().toString());
-                count = count + 1;
-                String translate = String.valueOf(count);
-                text.setText(translate);
+                if (value > count) {
+                    count = count + 1;
+                    String translate = String.valueOf(count);
+                    text.setText(translate);
+                } else {
+                    Toast("Такого количества товара нет!");
+                }
             }
         });
         btnOK.setOnClickListener(new View.OnClickListener() {
@@ -111,12 +126,17 @@ public class shopActivity extends AppCompatActivity {
             public void onClick(View v) {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
-                    Toast(nameItem + " добавленно в корзину " + quantity);
-                    dialog.dismiss();
+                    count = Integer.parseInt(text.getText().toString());
+                    if (value > count) {
+                        Toast(nameItem + " добавленно в корзину " + quantity);
+                        dialog.dismiss();
+                    } else {
+                        Toast("Такого количества товара нет!");
+                    }
                 }
             }
         });
-// поиск и фильтр, корзина
+//фильтр, корзина
         dialog.setContentView(view);
         dialog.setTitle(title);
         dialog.show();
@@ -193,6 +213,7 @@ public class shopActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             CustomArrayAdapter adapter = new CustomArrayAdapter(shopActivity.this,
                     R.layout.item_list, arrayListItem, getLayoutInflater());
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 adapter.filter(query);
@@ -209,5 +230,4 @@ public class shopActivity extends AppCompatActivity {
         });
         return super.onCreateOptionsMenu(menu);
     }
-
 }
