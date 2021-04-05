@@ -36,8 +36,9 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
         } else {
             text = text.toLowerCase();
             for (ListItem item : listItemCopy) {
-                if (item.Name.toLowerCase().contains(text) || item.Price.toLowerCase().contains(text)
-                        || item.Quantity.toLowerCase().contains(text)) {
+                if (item.Name.toLowerCase().contains(text) || item.CatNum.toLowerCase().contains(text)
+                        || item.Brand.toLowerCase().contains(text) || item.Group.toLowerCase().contains(text)
+                        || item.Available.toLowerCase().contains(text) || String.valueOf(item.Price).toLowerCase().contains(text) ) {
                     listItem.add(item);
                 }
             }
@@ -53,25 +54,34 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_list, null, false);
             viewHolder = new ViewHolder();
-            viewHolder.data1 = convertView.findViewById(R.id.nameTV);
-            viewHolder.data2 = convertView.findViewById(R.id.quantity_TV);
-            viewHolder.data3 = convertView.findViewById(R.id.Price_TV);
+            viewHolder.group_TV = convertView.findViewById(R.id.group_TV);
+            viewHolder.brand_TV = convertView.findViewById(R.id.brand_TV);
+            viewHolder.cat_num_TV = convertView.findViewById(R.id.cat_num_TV);
+            viewHolder.name_TV = convertView.findViewById(R.id.nameTV);
+            viewHolder.price_TV = convertView.findViewById(R.id.Price_TV);
+            viewHolder.available_TV = convertView.findViewById(R.id.available_TV);
             convertView.setTag(viewHolder);
 
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.data1.setText(listItemMain.getName());
-        viewHolder.data2.setText(listItemMain.getQuantity());
-        viewHolder.data3.setText(listItemMain.getPrice());
+        viewHolder.group_TV.setText(listItemMain.getGroup());
+        viewHolder.brand_TV.setText(listItemMain.getBrand());
+        viewHolder.cat_num_TV.setText(listItemMain.getCatNum());
+        viewHolder.name_TV.setText(listItemMain.getName());
+        viewHolder.price_TV.setText(String.valueOf(listItemMain.getPrice()));
+        viewHolder.available_TV.setText(listItemMain.getAvailable());
 
         return convertView;
     }
 
-    private class ViewHolder {
-        TextView data1;
-        TextView data2;
-        TextView data3;
+    private static class ViewHolder {
+        TextView group_TV;
+        TextView brand_TV;
+        TextView cat_num_TV;
+        TextView name_TV;
+        TextView price_TV;
+        TextView available_TV;
     }
 
 }

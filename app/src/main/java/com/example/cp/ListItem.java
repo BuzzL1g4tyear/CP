@@ -2,9 +2,44 @@ package com.example.cp;
 
 public class ListItem {
 
+    String Group;
+    String Brand;
+    String CatNum;
     String Name;
-    String Quantity;
-    String Price;
+    float Price;
+    String Available;
+
+    public String getBrand() {
+        return Brand;
+    }
+
+    public void setBrand(String brand) {
+        Brand = brand;
+    }
+
+    public String getGroup() {
+        return Group;
+    }
+
+    public void setGroup(String group) {
+        Group = group;
+    }
+
+    public String getCatNum() {
+        return CatNum;
+    }
+
+    public void setCatNum(String catNum) {
+        CatNum = catNum;
+    }
+
+    public String getAvailable() {
+        return Available;
+    }
+
+    public void setAvailable(String available) {
+        Available = available;
+    }
 
     public String getName() {
         return Name;
@@ -14,19 +49,11 @@ public class ListItem {
         this.Name = name;
     }
 
-    public String getQuantity() {
-        return Quantity;
-    }
-
-    public void setQuantity(String quantity) {
-        this.Quantity = quantity;
-    }
-
-    public String getPrice() {
+    public float getPrice() {
         return Price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(float price) {
         this.Price = price;
     }
 }

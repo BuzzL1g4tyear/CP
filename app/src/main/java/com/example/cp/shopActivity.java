@@ -40,7 +40,6 @@ public class shopActivity extends AppCompatActivity {
     private int count = 0;
     public String quantity;
     public String nameItem;
-    public int valueItem;
 
     public static final String SHOWQ = "SELECT * FROM STOCK";
 
@@ -60,8 +59,8 @@ public class shopActivity extends AppCompatActivity {
         customArrayAdapter = new CustomArrayAdapter(this, R.layout.item_list, arrayListItem, getLayoutInflater());
         listView.setAdapter(customArrayAdapter);
 
-        ShowCat cat = new ShowCat();
-        cat.execute();
+        Thread thread = new Thread(runnable);
+        thread.start();
 
         Toolbar toolbarShop = findViewById(R.id.toolbar);
         setSupportActionBar(toolbarShop);
@@ -70,16 +69,15 @@ public class shopActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 nameItem = arrayListItem.get(position).getName();
-                valueItem = Integer.parseInt(arrayListItem.get(position).getQuantity());
 
                 Log.d("MyLog", nameItem);
 
-                openDialog(nameItem, valueItem);
+                openDialog(nameItem);
             }
         });
     }
 
-    public void openDialog(String title, int value) {
+    public void openDialog(String title) {
         Dialog dialog = new Dialog(shopActivity.this, R.style.CustomStyleDialog);
         LayoutInflater inflater = this.getLayoutInflater();
         @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.fragment_blank, null);
@@ -112,13 +110,9 @@ public class shopActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 count = Integer.parseInt(text.getText().toString());
-                if (value > count) {
-                    count = count + 1;
-                    String translate = String.valueOf(count);
-                    text.setText(translate);
-                } else {
-                    Toast("Такого количества товара нет!");
-                }
+                count = count + 1;
+                String translate = String.valueOf(count);
+                text.setText(translate);
             }
         });
         btnOK.setOnClickListener(new View.OnClickListener() {
@@ -127,12 +121,8 @@ public class shopActivity extends AppCompatActivity {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
                     count = Integer.parseInt(text.getText().toString());
-                    if (value > count) {
-                        Toast(nameItem + " добавленно в корзину " + quantity);
-                        dialog.dismiss();
-                    } else {
-                        Toast("Такого количества товара нет!");
-                    }
+                    Toast(nameItem + " добавленно в корзину " + quantity);
+                    dialog.dismiss();
                 }
             }
         });
@@ -157,17 +147,12 @@ public class shopActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
-    @SuppressLint("StaticFieldLeak")
-    public final class ShowCat extends AsyncTask<String, Void, ListItem> {
 
+    Runnable runnable = new Runnable() {
         ListItem listItem;
-
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+        public void run() {
 
-        protected ListItem doInBackground(String... query) {
             try {
                 st = connection.createStatement();
                 rs = st.executeQuery(SHOWQ);
@@ -178,9 +163,12 @@ public class shopActivity extends AppCompatActivity {
                         ListItem items = new ListItem();
 
                         for (int i = columnCount; i <= columnCount; i++) {
-                            items.setName(rs.getString(2).trim());
-                            items.setQuantity(rs.getString(3));
-                            items.setPrice(rs.getString(4));
+                            items.setGroup(rs.getString(1).trim());
+                            items.setBrand(rs.getString(2).trim());
+                            items.setCatNum(rs.getString(3).trim());
+                            items.setName(rs.getString(4).trim());
+                            items.setPrice(rs.getFloat(5));
+                            items.setAvailable(rs.getString(6).trim());
                             arrayListItem.add(items);
                             customArrayAdapter.notifyDataSetChanged();
                         }
@@ -197,11 +185,9 @@ public class shopActivity extends AppCompatActivity {
                     throw new RuntimeException(e.getMessage());
                 }
             }
-            return listItem;
         }
-    }
+    };
 
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.items_toolbar, menu);
