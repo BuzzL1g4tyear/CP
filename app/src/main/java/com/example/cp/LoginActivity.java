@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
             boolean status = checkUser.execute().get();
             SharedPreferences.Editor e = sp.edit();
             e.putBoolean("hasLogged", true);
+            e.putString("name",login);
             e.apply();
 
             if (status) {
@@ -125,8 +126,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (rs.next()) {
                     resultSet = true;
                     Snack("Вошли!");
-                } else {
-                    Snack("Что-то капец");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

@@ -4,10 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.os.AsyncTask;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,13 +23,22 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+//todo фильтр, корзина
 public class shopActivity extends AppCompatActivity {
+    private static final String MY_SETTINGS = "my_settings";
     private ListView listView;
     private CustomArrayAdapter customArrayAdapter;
     private List<ListItem> arrayListItem;
@@ -40,16 +49,29 @@ public class shopActivity extends AppCompatActivity {
     private int count = 0;
     public String quantity;
     public String nameItem;
+    public String catNum;
+    public String name;
 
     public static final String SHOWQ = "SELECT * FROM STOCK";
+    public static final String ADDQAO = "INSERT INTO AndroidOrders (OrderId, CustomerId, OrderStatus, OrderDate) " +
+            "VALUES (?,(SELECT LoginId FROM LoginData WHERE Login = ?),?,?)";
+    public static final String ADDQAOI = "INSERT INTO AndroidOrdersItems (odId, odCode, odName, odQuant" +
+            ", odStatus, odOrderId) VALUES (?,?,?,?,?,?)";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
+    PreparedStatement ps1 = null;
+    PreparedStatement ps2 = null;
     Statement st = null;
     ResultSet rs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
+                Context.MODE_PRIVATE);
+        name = sp.getString("name", "null");
+        Log.d("MyLog", name);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
 
@@ -59,7 +81,7 @@ public class shopActivity extends AppCompatActivity {
         customArrayAdapter = new CustomArrayAdapter(this, R.layout.item_list, arrayListItem, getLayoutInflater());
         listView.setAdapter(customArrayAdapter);
 
-        Thread thread = new Thread(runnable);
+        Thread thread = new Thread(showItems);
         thread.start();
 
         Toolbar toolbarShop = findViewById(R.id.toolbar);
@@ -69,6 +91,7 @@ public class shopActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 nameItem = arrayListItem.get(position).getName();
+                catNum = arrayListItem.get(position).getCatNum();
 
                 Log.d("MyLog", nameItem);
 
@@ -120,13 +143,16 @@ public class shopActivity extends AppCompatActivity {
             public void onClick(View v) {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
-                    count = Integer.parseInt(text.getText().toString());
+                    Thread thread1 = new Thread(addToBDAO);
+                    thread1.start();
+                    Thread thread2 = new Thread(addToBDAOI);
+                    thread2.start();
                     Toast(nameItem + " добавленно в корзину " + quantity);
                     dialog.dismiss();
                 }
             }
         });
-//фильтр, корзина
+
         dialog.setContentView(view);
         dialog.setTitle(title);
         dialog.show();
@@ -147,12 +173,11 @@ public class shopActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
-
-    Runnable runnable = new Runnable() {
+    Runnable showItems = new Runnable() {
         ListItem listItem;
+
         @Override
         public void run() {
-
             try {
                 st = connection.createStatement();
                 rs = st.executeQuery(SHOWQ);
@@ -181,6 +206,59 @@ public class shopActivity extends AppCompatActivity {
                 try {
                     if (rs != null) rs.close();
                     if (st != null) st.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        }
+    };
+
+    Runnable addToBDAO = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                ps1 = connection.prepareStatement(ADDQAO);
+
+                java.util.Date utilDate = new java.util.Date();
+                java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
+
+                ps1.setInt(1, 1);//id
+                ps1.setString(2, name);// заказщик
+                ps1.setInt(3, 1);// статус
+                ps1.setTimestamp(4, sqlDate);// дата
+
+                ps1.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (ps1 != null) ps1.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        }
+    };
+
+    Runnable addToBDAOI = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                ps2 = connection.prepareStatement(ADDQAOI);
+
+                ps2.setInt(1, 1);// odCode
+                ps2.setString(2, catNum);// odCode
+                ps2.setString(3, nameItem);// odName
+                ps2.setInt(4, Integer.parseInt(quantity));// odQuant
+                ps2.setInt(5, 1);// odStatus
+                ps2.setInt(6, 1);// odOrderId
+
+                ps2.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (ps2 != null) ps2.close();
                 } catch (SQLException e) {
                     throw new RuntimeException(e.getMessage());
                 }

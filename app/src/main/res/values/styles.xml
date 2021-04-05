@@ -18,6 +18,7 @@
     
     <style name="CustomStyleDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:windowNoTitle">false</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:background">@color/colorDialog</item>
     </style>
 

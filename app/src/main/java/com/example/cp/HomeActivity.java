@@ -48,17 +48,6 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onClickDB(View view) {
-        Dialog("Activity",view.toString());
-    }
-
-    public void Snack(String mes) {
-        View activity_home = findViewById(android.R.id.content);
-        Snackbar snackbar = Snackbar
-                .make(activity_home, mes, Snackbar.LENGTH_LONG);
-        snackbar.show();
-    }
-
     public static boolean hasConnection(final Context context)
     {
         ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -9,14 +9,15 @@
     <string name="loginTXT">Логин</string>
     <string name="emailTXT">Email</string>
     <string name="pasTXT">Пароль</string>
-    <string name="U_famTXT">Фамилия</string>
-    <string name="U_nameTXT">Имя</string>
-    <string name="telTXT">Номер телефона</string>
     <string name="title_activity_register">RegisterActivity</string>
-    <string name="NameItemTXT">Название товара</string>
-    <string name="QuantityItemTXT">Количество</string>
+<!--    shop lables-->
+    <string name="group">Группа</string>
+    <string name="brand">Бренд</string>
+    <string name="catNum">КатНомер</string>
+    <string name="NameItemTXT">Наименование</string>
+    <string name="QuantityItemTXT">Доступно</string>
     <string name="PriceItemTXT">Цена</string>
-    <string name="basket">Корзина</string>
+    <string name="shop">Магазин</string>
     <string name="quantityItemTXT">Введите количество</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
