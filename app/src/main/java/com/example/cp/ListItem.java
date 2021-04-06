@@ -1,13 +1,42 @@
 package com.example.cp;
 
+import java.sql.Timestamp;
+
 public class ListItem {
 
+    int Quantity;
     String Group;
     String Brand;
     String CatNum;
     String Name;
     float Price;
     String Available;
+    String Customer;
+    Timestamp Data;
+
+    public int getQuantity() {
+        return Quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        Quantity = quantity;
+    }
+
+    public String getCustomer() {
+        return Customer;
+    }
+
+    public void setCustomer(String customer) {
+        Customer = customer;
+    }
+
+    public Timestamp getData() {
+        return Data;
+    }
+
+    public void setData(Timestamp data) {
+        Data = data;
+    }
 
     public String getBrand() {
         return Brand;

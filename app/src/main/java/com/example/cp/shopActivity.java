@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-//todo фильтр, корзина
 public class shopActivity extends AppCompatActivity {
     private static final String MY_SETTINGS = "my_settings";
     private ListView listView;

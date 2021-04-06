@@ -10,7 +10,7 @@
     <string name="emailTXT">Email</string>
     <string name="pasTXT">Пароль</string>
     <string name="title_activity_register">RegisterActivity</string>
-<!--    shop lables-->
+    <!--    shop lables-->
     <string name="group">Группа</string>
     <string name="brand">Бренд</string>
     <string name="catNum">КатНомер</string>

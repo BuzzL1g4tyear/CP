@@ -15,12 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
+public class BaskedAdapter extends ArrayAdapter<ListItem> {
     private final LayoutInflater inflater;
     private List<ListItem> listItem = new ArrayList<>();
     private List<ListItem> listItemCopy = new ArrayList<>();
 
-    public CustomArrayAdapter(@NonNull Context context, int resource, List<ListItem> list, LayoutInflater inflater) {
+    public BaskedAdapter(@NonNull Context context, int resource, List<ListItem> list, LayoutInflater inflater) {
         super(context, resource, list);
 
         listItemCopy.addAll(list);
@@ -28,7 +28,7 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
         this.inflater = inflater;
         this.listItem = list;
     }
-
+// todo item.Data.toLowerCase().contains(text)
     public void filter(@NotNull String text) {
         listItem.clear();
         if (text.isEmpty()) {
@@ -36,9 +36,9 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
         } else {
             text = text.toLowerCase();
             for (ListItem item : listItemCopy) {
-                if (item.Name.toLowerCase().contains(text) || item.CatNum.toLowerCase().contains(text)
-                        || item.Brand.toLowerCase().contains(text) || item.Group.toLowerCase().contains(text)
-                        || item.Available.toLowerCase().contains(text) || String.valueOf(item.Price).toLowerCase().contains(text) ) {
+                if (item.CatNum.toLowerCase().contains(text) || item.Customer.toLowerCase().contains(text)
+                        || String.valueOf(item.Quantity).toLowerCase().contains(text) || item.Name.toLowerCase().contains(text)
+                        ||  String.valueOf(item.Price).toLowerCase().contains(text)) {
                     listItem.add(item);
                 }
             }
@@ -52,36 +52,36 @@ public class CustomArrayAdapter extends ArrayAdapter<ListItem> {
         ViewHolder viewHolder;
         ListItem listItemMain = listItem.get(position);
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.item_list, null, false);
+            convertView = inflater.inflate(R.layout.basket_items, null, false);
             viewHolder = new ViewHolder();
-            viewHolder.group_TV = convertView.findViewById(R.id.group_TV);
-            viewHolder.brand_TV = convertView.findViewById(R.id.brand_TV);
+            viewHolder.customer_TV = convertView.findViewById(R.id.customer_TV);
+            viewHolder.quantity_TV = convertView.findViewById(R.id.quantity_TV);
             viewHolder.cat_num_TV = convertView.findViewById(R.id.cat_num_TV);
             viewHolder.name_TV = convertView.findViewById(R.id.nameTV);
             viewHolder.price_TV = convertView.findViewById(R.id.Price_TV);
-            viewHolder.available_TV = convertView.findViewById(R.id.available_TV);
+            viewHolder.date_TV = convertView.findViewById(R.id.orderDate_TV);
             convertView.setTag(viewHolder);
 
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.group_TV.setText(listItemMain.getGroup());
-        viewHolder.brand_TV.setText(listItemMain.getBrand());
+        viewHolder.customer_TV.setText(listItemMain.getCustomer());
+        viewHolder.quantity_TV.setText(listItemMain.getQuantity());
         viewHolder.cat_num_TV.setText(listItemMain.getCatNum());
         viewHolder.name_TV.setText(listItemMain.getName());
         viewHolder.price_TV.setText(String.valueOf(listItemMain.getPrice()));
-        viewHolder.available_TV.setText(listItemMain.getAvailable());
+        viewHolder.date_TV.setText(String.valueOf(listItemMain.getData()));
 
         return convertView;
     }
 
     private static class ViewHolder {
-        TextView group_TV;
-        TextView brand_TV;
+        TextView customer_TV;
         TextView cat_num_TV;
         TextView name_TV;
+        TextView quantity_TV;
+        TextView date_TV;
         TextView price_TV;
-        TextView available_TV;
     }
 }
 
