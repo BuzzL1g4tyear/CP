@@ -9,24 +9,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaskedAdapter extends ArrayAdapter<ListItem> {
-    private final LayoutInflater inflater;
+public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder> {
     private List<ListItem> listItem = new ArrayList<>();
     private List<ListItem> listItemCopy = new ArrayList<>();
 
-    public BaskedAdapter(@NonNull Context context, int resource, List<ListItem> list, LayoutInflater inflater) {
-        super(context, resource, list);
-
+    public BaskedAdapter(List<ListItem> list) {
         listItemCopy.addAll(list);
-
-        this.inflater = inflater;
-        this.listItem = list;
+        listItem = list;
     }
 
     public void filter(@NotNull String text) {
@@ -48,40 +44,47 @@ public class BaskedAdapter extends ArrayAdapter<ListItem> {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        ViewHolder viewHolder;
-        ListItem listItemMain = listItem.get(position);
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.basket_items, null, false);
-            viewHolder = new ViewHolder();
-            viewHolder.bGroup_TV = convertView.findViewById(R.id.bGroup_TV);
-            viewHolder.bQuantity_TV = convertView.findViewById(R.id.bQuantity_TV);
-            viewHolder.bCatNum_TV = convertView.findViewById(R.id.bCatNum_TV);
-            viewHolder.bNameItem_TV = convertView.findViewById(R.id.bNameItem_TV);
-            viewHolder.bPrice_TV = convertView.findViewById(R.id.bPrice_TV);
-            viewHolder.bBrand_TV = convertView.findViewById(R.id.bBrand_TV);
-            convertView.setTag(viewHolder);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.basket_items, parent, false);
+        return new ViewHolder(view);
 
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        viewHolder.bGroup_TV.setText(listItemMain.getGroup());
-        viewHolder.bQuantity_TV.setText(String.valueOf(listItemMain.getQuantity()));
-        viewHolder.bCatNum_TV.setText(listItemMain.getCatNum());
-        viewHolder.bNameItem_TV.setText(listItemMain.getName());
-        viewHolder.bPrice_TV.setText(String.valueOf(listItemMain.getPrice()));
-        viewHolder.bBrand_TV.setText(String.valueOf(listItemMain.getBrand()));
-
-        return convertView;
     }
 
-    private static class ViewHolder {
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        ListItem listItemMain = listItem.get(position);
+        holder.bGroup_TV.setText(listItemMain.getGroup());
+        holder.bQuantity_TV.setText(String.valueOf(listItemMain.getQuantity()));
+        holder.bCatNum_TV.setText(listItemMain.getCatNum());
+        holder.bNameItem_TV.setText(listItemMain.getName());
+        holder.bPrice_TV.setText(String.valueOf(listItemMain.getPrice()));
+        holder.bBrand_TV.setText(String.valueOf(listItemMain.getBrand()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return listItem.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder{
+
         TextView bGroup_TV;
         TextView bCatNum_TV;
         TextView bNameItem_TV;
         TextView bQuantity_TV;
         TextView bBrand_TV;
         TextView bPrice_TV;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            bGroup_TV = view.findViewById(R.id.bGroup_TV);
+            bQuantity_TV = view.findViewById(R.id.bQuantity_TV);
+            bCatNum_TV = view.findViewById(R.id.bCatNum_TV);
+            bNameItem_TV = view.findViewById(R.id.bNameItem_TV);
+            bPrice_TV = view.findViewById(R.id.bPrice_TV);
+            bBrand_TV = view.findViewById(R.id.bBrand_TV);
+        }
     }
 }
 

@@ -15,7 +15,7 @@
         android:layout_marginTop="28dp"
         android:autofillHints=""
         android:ems="10"
-        android:hint="@string/QuantityItemTXT"
+        android:hint="@string/QuantityNum"
         android:inputType="number"
         android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,5 +1,10 @@
 package com.example.cp;
 
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.sql.Timestamp;
 
 public class ListItem {
@@ -13,6 +18,7 @@ public class ListItem {
     String Available;
     String Customer;
     Timestamp Data;
+
 
     public int getQuantity() {
         return Quantity;

@@ -132,12 +132,19 @@ public class shopActivity extends AppCompatActivity {
             public void onClick(View v) {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
-                    Thread thread1 = new Thread(addToBasket);
-                    thread1.start();
+                    count = Integer.parseInt(text.getText().toString());
+                    if(count != 0) {
+                        Thread thread1 = new Thread(addToBasket);
+                        thread1.start();
 //                    Thread thread2 = new Thread(addToBDAOI);
 //                    thread2.start();
-                    Toast(nameItem + " добавленно в корзину " + quantity);
-                    dialog.dismiss();
+                        Toast(nameItem + " добавленно в корзину " + quantity);
+                        dialog.dismiss();
+                    } else {
+                        Toast("Выбранно количество 0");
+                    }
+                } else {
+                    Toast("Пустое поле");
                 }
             }
         });

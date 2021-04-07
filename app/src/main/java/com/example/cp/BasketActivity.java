@@ -1,16 +1,24 @@
 package com.example.cp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SearchView;
 
 import java.sql.Connection;
@@ -23,18 +31,24 @@ import java.util.List;
 public class BasketActivity extends AppCompatActivity {
 
     private BaskedAdapter baskedAdapter;
+    Button btnUPD;
     private static final String MY_SETTINGS = "my_settings";
     String name;
+    String catNum;
 
     public static final String SHOWBASKETQ = "SELECT Группа, Бренд, ShoppingCart.КатНомер, Наименование, [Ваша цена (BYN c НДС)], Количество " +
             "FROM ShoppingCart " +
             "JOIN Stock S ON ShoppingCart.КатНомер = S.КатНомер " +
             "WHERE Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
+    public static final String DELETEFROMBASKET = "DELETE FROM ShoppingCart " +
+            "WHERE КатНомер = ? AND Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
+    PreparedStatement ps1 = null;
     ResultSet rs = null;
-    ListView basketList;
+    RecyclerView basketRV;
+    RecyclerView.LayoutManager layoutManager;
 
     private List<ListItem> arrayListItem;
 
@@ -47,10 +61,14 @@ public class BasketActivity extends AppCompatActivity {
         name = sp.getString("name", "null");
 
         arrayListItem = new ArrayList<>();
-        basketList = findViewById(R.id.basketListView);
+        basketRV = findViewById(R.id.basketListView);
 
-        baskedAdapter = new BaskedAdapter(this, R.layout.basket_items, arrayListItem, getLayoutInflater());
-        basketList.setAdapter(baskedAdapter);
+        baskedAdapter = new BaskedAdapter(arrayListItem);
+        basketRV.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        basketRV.setLayoutManager(layoutManager);
+        new ItemTouchHelper(callback).attachToRecyclerView(basketRV);
+        basketRV.setAdapter(baskedAdapter);
 
         runOnUiThread(showBasket);
 
@@ -98,6 +116,59 @@ public class BasketActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void openDialog(String title) {
+        Dialog dialog = new Dialog(BasketActivity.this, R.style.CustomStyleDialog);
+        LayoutInflater inflater = this.getLayoutInflater();
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.fragment_basket, null);
+
+        btnUPD = view.findViewById(R.id.btnUpd);
+
+        dialog.setContentView(view);
+        dialog.setTitle(title);
+        dialog.show();
+    }
+
+    ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            ListItem item = arrayListItem.get(viewHolder.getAdapterPosition());
+            catNum = item.getCatNum();
+            Thread thread = new Thread(deleteItem);
+            thread.start();
+            arrayListItem.remove(viewHolder.getAdapterPosition());
+            baskedAdapter.notifyDataSetChanged();
+        }
+    };
+
+    Runnable deleteItem = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                ps1 = connection.prepareStatement(DELETEFROMBASKET);
+
+                ps1.setString(1, catNum);
+                ps1.setString(2, name);
+
+                ps1.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (rs != null) rs.close();
+                    if (ps1 != null) ps1.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        }
+    };
+
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.items_toolbar, menu);
@@ -107,20 +178,19 @@ public class BasketActivity extends AppCompatActivity {
         searchView.setQueryHint("Поиск");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            BaskedAdapter adapter = new BaskedAdapter(BasketActivity.this,
-                    R.layout.basket_items, arrayListItem, getLayoutInflater());
+            BaskedAdapter adapter = new BaskedAdapter(arrayListItem);
 
             @Override
             public boolean onQueryTextSubmit(String query) {
                 adapter.filter(query);
-                basketList.setAdapter(adapter);
+                basketRV.setAdapter(adapter);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.filter(newText);
-                basketList.setAdapter(adapter);
+                basketRV.setAdapter(adapter);
                 return true;
             }
         });
