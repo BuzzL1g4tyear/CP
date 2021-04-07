@@ -27,14 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class shopActivity extends AppCompatActivity {
     private static final String MY_SETTINGS = "my_settings";
@@ -52,10 +46,10 @@ public class shopActivity extends AppCompatActivity {
     public String name;
 
     public static final String SHOWQ = "SELECT * FROM STOCK";
-    public static final String ADDQAO = "INSERT INTO AndroidOrders (OrderId, CustomerId, OrderStatus, OrderDate) " +
-            "VALUES (?,(SELECT LoginId FROM LoginData WHERE Login = ?),?,?)";
-    public static final String ADDQAOI = "INSERT INTO AndroidOrdersItems (odId, odCode, odName, odQuant" +
-            ", odStatus, odOrderId) VALUES (?,?,?,?,?,?)";
+    public static final String ADDTOBASKET = "INSERT INTO ShoppingCart (КатНомер, Количество, Дата, Клиент)" +
+            " VALUES (?,?,?,(SELECT LoginId FROM LoginData WHERE Login = ?))";
+    public static final String UPDBASKET = "UPDATE ShoppingCart SET Количество = ?" +
+            "WHERE КатНомер = ? AND Клиент = ?";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
@@ -69,7 +63,6 @@ public class shopActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
         name = sp.getString("name", "null");
-        Log.d("MyLog", name);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
@@ -91,8 +84,6 @@ public class shopActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 nameItem = arrayListItem.get(position).getName();
                 catNum = arrayListItem.get(position).getCatNum();
-
-                Log.d("MyLog", nameItem);
 
                 openDialog(nameItem);
             }
@@ -142,10 +133,10 @@ public class shopActivity extends AppCompatActivity {
             public void onClick(View v) {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
-                    Thread thread1 = new Thread(addToBDAO);
+                    Thread thread1 = new Thread(addToBasket);
                     thread1.start();
-                    Thread thread2 = new Thread(addToBDAOI);
-                    thread2.start();
+//                    Thread thread2 = new Thread(addToBDAOI);
+//                    thread2.start();
                     Toast(nameItem + " добавленно в корзину " + quantity);
                     dialog.dismiss();
                 }
@@ -212,19 +203,19 @@ public class shopActivity extends AppCompatActivity {
         }
     };
 
-    Runnable addToBDAO = new Runnable() {
+    Runnable addToBasket = new Runnable() {
         @Override
         public void run() {
             try {
-                ps1 = connection.prepareStatement(ADDQAO);
+                ps1 = connection.prepareStatement(ADDTOBASKET);
 
                 java.util.Date utilDate = new java.util.Date();
                 java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
 
-                ps1.setInt(1, 1);//id
-                ps1.setString(2, name);// заказщик
-                ps1.setInt(3, 1);// статус
-                ps1.setTimestamp(4, sqlDate);// дата
+                ps1.setString(1, catNum);// catNum
+                ps1.setString(2, quantity);// quantity
+                ps1.setTimestamp(3, sqlDate);// date
+                ps1.setString(4, name);// client
 
                 ps1.execute();
             } catch (SQLException e) {
@@ -239,31 +230,31 @@ public class shopActivity extends AppCompatActivity {
         }
     };
 
-    Runnable addToBDAOI = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                ps2 = connection.prepareStatement(ADDQAOI);
-
-                ps2.setInt(1, 1);// odCode
-                ps2.setString(2, catNum);// odCode
-                ps2.setString(3, nameItem);// odName
-                ps2.setInt(4, Integer.parseInt(quantity));// odQuant
-                ps2.setInt(5, 1);// odStatus
-                ps2.setInt(6, 1);// odOrderId
-
-                ps2.execute();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (ps2 != null) ps2.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e.getMessage());
-                }
-            }
-        }
-    };
+//    Runnable addToBDAOI = new Runnable() {
+//        @Override
+//        public void run() {
+//            try {
+//                ps2 = connection.prepareStatement(ADDQAOI);
+//
+//                ps2.setInt(1, 1);// odCode
+//                ps2.setString(2, catNum);// odCode
+//                ps2.setString(3, nameItem);// odName
+//                ps2.setInt(4, Integer.parseInt(quantity));// odQuant
+//                ps2.setInt(5, 1);// odStatus
+//                ps2.setInt(6, 1);// odOrderId
+//
+//                ps2.execute();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    if (ps2 != null) ps2.close();
+//                } catch (SQLException e) {
+//                    throw new RuntimeException(e.getMessage());
+//                }
+//            }
+//        }
+//    };
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

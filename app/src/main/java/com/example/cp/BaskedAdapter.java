@@ -54,34 +54,34 @@ public class BaskedAdapter extends ArrayAdapter<ListItem> {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.basket_items, null, false);
             viewHolder = new ViewHolder();
-            viewHolder.customer_TV = convertView.findViewById(R.id.customer_TV);
-            viewHolder.quantity_TV = convertView.findViewById(R.id.quantity_TV);
-            viewHolder.cat_num_TV = convertView.findViewById(R.id.cat_num_TV);
-            viewHolder.name_TV = convertView.findViewById(R.id.nameTV);
-            viewHolder.price_TV = convertView.findViewById(R.id.Price_TV);
-            viewHolder.date_TV = convertView.findViewById(R.id.orderDate_TV);
+            viewHolder.bGroup_TV = convertView.findViewById(R.id.bGroup_TV);
+            viewHolder.bQuantity_TV = convertView.findViewById(R.id.bQuantity_TV);
+            viewHolder.bCatNum_TV = convertView.findViewById(R.id.bCatNum_TV);
+            viewHolder.bNameItem_TV = convertView.findViewById(R.id.bNameItem_TV);
+            viewHolder.bPrice_TV = convertView.findViewById(R.id.bPrice_TV);
+            viewHolder.bBrand_TV = convertView.findViewById(R.id.bBrand_TV);
             convertView.setTag(viewHolder);
 
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.customer_TV.setText(listItemMain.getCustomer());
-        viewHolder.quantity_TV.setText(listItemMain.getQuantity());
-        viewHolder.cat_num_TV.setText(listItemMain.getCatNum());
-        viewHolder.name_TV.setText(listItemMain.getName());
-        viewHolder.price_TV.setText(String.valueOf(listItemMain.getPrice()));
-        viewHolder.date_TV.setText(String.valueOf(listItemMain.getData()));
+        viewHolder.bGroup_TV.setText(listItemMain.getGroup());
+        viewHolder.bQuantity_TV.setText(String.valueOf(listItemMain.getQuantity()));
+        viewHolder.bCatNum_TV.setText(listItemMain.getCatNum());
+        viewHolder.bNameItem_TV.setText(listItemMain.getName());
+        viewHolder.bPrice_TV.setText(String.valueOf(listItemMain.getPrice()));
+        viewHolder.bBrand_TV.setText(String.valueOf(listItemMain.getBrand()));
 
         return convertView;
     }
 
     private static class ViewHolder {
-        TextView customer_TV;
-        TextView cat_num_TV;
-        TextView name_TV;
-        TextView quantity_TV;
-        TextView date_TV;
-        TextView price_TV;
+        TextView bGroup_TV;
+        TextView bCatNum_TV;
+        TextView bNameItem_TV;
+        TextView bQuantity_TV;
+        TextView bBrand_TV;
+        TextView bPrice_TV;
     }
 }
 

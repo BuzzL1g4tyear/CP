@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 public class HomeActivity extends AppCompatActivity {
+    Button buttonBasket;
 
     private static final String MY_SETTINGS = "my_settings";
     boolean hasLogged;
@@ -38,6 +39,15 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             Dialog("Ошибка!", "Вы не подключились к Интернету!");
         }
+        buttonBasket = findViewById(R.id.buttonBasket);
+
+        buttonBasket.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, BasketActivity.class);
+                startActivity(intent);
+            }
+        });
     }
     public void onClickReg(View view) {
         Dialog("Activity",view.toString());
