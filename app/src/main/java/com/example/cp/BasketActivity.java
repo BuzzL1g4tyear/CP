@@ -1,11 +1,17 @@
 package com.example.cp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,8 +52,10 @@ public class BasketActivity extends AppCompatActivity {
         baskedAdapter = new BaskedAdapter(this, R.layout.basket_items, arrayListItem, getLayoutInflater());
         basketList.setAdapter(baskedAdapter);
 
-        Thread thread = new Thread(showBasket);
-        thread.start();
+        runOnUiThread(showBasket);
+
+        Toolbar toolbarShop = findViewById(R.id.toolbarBasket);
+        setSupportActionBar(toolbarShop);
     }
 
     Runnable showBasket = new Runnable() {
@@ -90,5 +98,32 @@ public class BasketActivity extends AppCompatActivity {
             }
         }
     };
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.items_toolbar, menu);
 
+        MenuItem item = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView.setQueryHint("Поиск");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            BaskedAdapter adapter = new BaskedAdapter(BasketActivity.this,
+                    R.layout.basket_items, arrayListItem, getLayoutInflater());
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filter(query);
+                basketList.setAdapter(adapter);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                basketList.setAdapter(adapter);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
 }

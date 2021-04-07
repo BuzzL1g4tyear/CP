@@ -28,7 +28,7 @@ public class BaskedAdapter extends ArrayAdapter<ListItem> {
         this.inflater = inflater;
         this.listItem = list;
     }
-// todo item.Data.toLowerCase().contains(text)
+
     public void filter(@NotNull String text) {
         listItem.clear();
         if (text.isEmpty()) {
@@ -36,9 +36,9 @@ public class BaskedAdapter extends ArrayAdapter<ListItem> {
         } else {
             text = text.toLowerCase();
             for (ListItem item : listItemCopy) {
-                if (item.CatNum.toLowerCase().contains(text) || item.Customer.toLowerCase().contains(text)
+                if (item.CatNum.toLowerCase().contains(text) || item.Brand.toLowerCase().contains(text)
                         || String.valueOf(item.Quantity).toLowerCase().contains(text) || item.Name.toLowerCase().contains(text)
-                        ||  String.valueOf(item.Price).toLowerCase().contains(text)) {
+                        ||  String.valueOf(item.Price).toLowerCase().contains(text) || item.Group.toLowerCase().contains(text)) {
                     listItem.add(item);
                 }
             }

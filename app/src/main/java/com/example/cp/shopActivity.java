@@ -73,8 +73,7 @@ public class shopActivity extends AppCompatActivity {
         customArrayAdapter = new CustomArrayAdapter(this, R.layout.item_list, arrayListItem, getLayoutInflater());
         listView.setAdapter(customArrayAdapter);
 
-        Thread thread = new Thread(showItems);
-        thread.start();
+        runOnUiThread(showItems);
 
         Toolbar toolbarShop = findViewById(R.id.toolbar);
         setSupportActionBar(toolbarShop);

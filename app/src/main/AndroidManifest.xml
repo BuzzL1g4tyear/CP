@@ -12,7 +12,11 @@
         android:roundIcon="@mipmap/ic_cp_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BasketActivity"></activity>
+        <activity
+            android:name=".BasketActivity"
+            android:theme="@style/basketStyle">
+        </activity>
+
         <activity
             android:name=".shopActivity"
             android:theme="@style/shopStyle" />

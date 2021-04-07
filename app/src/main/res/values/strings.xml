@@ -23,6 +23,7 @@
     <string name="minus">-</string>
     <string name="OK">OK</string>
     <string name="basket">Корзина</string>
+    <string name="QuantityNum">Кол-во</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
