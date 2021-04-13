@@ -9,17 +9,19 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import java.sql.Connection;
@@ -68,13 +70,14 @@ public class shopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shop);
 
         arrayListItem = new ArrayList<>();
-        listView = findViewById(R.id.ItemsList);
+        listView = findViewById(R.id.itemsList);
 
         customArrayAdapter = new CustomArrayAdapter(this, R.layout.item_list, arrayListItem, getLayoutInflater());
         listView.setAdapter(customArrayAdapter);
 
         runOnUiThread(showItems);
 
+        setListViewHeightBasedOnChildren(listView);
         Toolbar toolbarShop = findViewById(R.id.toolbar);
         setSupportActionBar(toolbarShop);
 
@@ -87,6 +90,28 @@ public class shopActivity extends AppCompatActivity {
                 openDialog(nameItem);
             }
         });
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, TableRow.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
     public void openDialog(String title) {

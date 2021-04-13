@@ -1,6 +1,7 @@
 package com.example.cp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
@@ -60,6 +61,8 @@ public class BasketActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE);
         name = sp.getString("name", "null");
 
+
+
         arrayListItem = new ArrayList<>();
         basketRV = findViewById(R.id.basketListView);
 
@@ -74,6 +77,7 @@ public class BasketActivity extends AppCompatActivity {
 
         Toolbar toolbarShop = findViewById(R.id.toolbarBasket);
         setSupportActionBar(toolbarShop);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     Runnable showBasket = new Runnable() {
