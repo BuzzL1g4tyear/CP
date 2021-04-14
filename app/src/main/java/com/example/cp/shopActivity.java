@@ -1,5 +1,6 @@
 package com.example.cp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -67,6 +69,8 @@ public class shopActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
+
+        setTitle(R.string.labelShop);
 
         arrayListItem = new ArrayList<>();
         recyclerView = findViewById(R.id.itemsList);
@@ -134,7 +138,7 @@ public class shopActivity extends AppCompatActivity {
                 quantity = text.getText().toString();
                 if (CheckFields(quantity)) {
                     count = Integer.parseInt(text.getText().toString());
-                    if(count != 0) {
+                    if (count != 0) {
                         Thread thread1 = new Thread(addToBasket);
                         thread1.start();
                         Toast(nameItem + " добавленно в корзину " + quantity);
@@ -261,5 +265,18 @@ public class shopActivity extends AppCompatActivity {
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.basketToolbar:
+                Intent intent = new Intent(shopActivity.this, BasketActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

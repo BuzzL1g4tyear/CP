@@ -15,20 +15,25 @@
 
         <activity
             android:name=".shopActivity"
-            android:theme="@style/shopStyle" />
-        <activity android:name=".HomeActivity" >
+            android:theme="@style/shopStyle">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".HomeActivity" >
+
+        </activity>
+
         <activity android:name=".DbActivity" />
         <activity android:name=".LoginActivity" />
         <activity
             android:name=".BasketActivity"
             android:theme="@style/basketStyle"
-            android:parentActivityName=".HomeActivity">
+            android:parentActivityName=".shopActivity">
         </activity>
     </application>
 

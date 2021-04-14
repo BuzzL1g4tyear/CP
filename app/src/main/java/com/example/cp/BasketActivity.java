@@ -59,6 +59,9 @@ public class BasketActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basket);
+
+        setTitle(R.string.labelBasket);
+
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
         name = sp.getString("name", "null");
@@ -75,8 +78,8 @@ public class BasketActivity extends AppCompatActivity {
 
         runOnUiThread(showBasket);
 
-        Toolbar toolbarShop = findViewById(R.id.toolbarBasket);
-        setSupportActionBar(toolbarShop);
+        Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
+        setSupportActionBar(toolbarBasket);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -175,7 +178,7 @@ public class BasketActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.items_toolbar, menu);
+        inflater.inflate(R.menu.basket_toolbar, menu);
 
         MenuItem item = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);

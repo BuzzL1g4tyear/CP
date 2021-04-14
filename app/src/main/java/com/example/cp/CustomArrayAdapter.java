@@ -63,11 +63,11 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ListItem listItemMain = listItem.get(position);
         holder.sGroup_TV.setText(listItemMain.getGroup());
-        holder.sBrand_TV.setText(String.valueOf(listItemMain.getQuantity()));
+        holder.sBrand_TV.setText(listItemMain.getBrand());
         holder.sCat_num_TV.setText(listItemMain.getCatNum());
         holder.sName_TV.setText(listItemMain.getName());
         holder.sPrice_TV.setText(String.valueOf(listItemMain.getPrice()));
-        holder.sAvailable_TV.setText(String.valueOf(listItemMain.getBrand()));
+        holder.sAvailable_TV.setText(listItemMain.getAvailable());
     }
 
     @Override
