@@ -36,6 +36,8 @@ public class BasketActivity extends AppCompatActivity {
     private static final String MY_SETTINGS = "my_settings";
     String name;
     String catNum;
+    RecyclerView basketRV;
+    RecyclerView.LayoutManager layoutManager;
 
     public static final String SHOWBASKETQ = "SELECT Группа, Бренд, ShoppingCart.КатНомер, Наименование, [Ваша цена (BYN c НДС)], Количество " +
             "FROM ShoppingCart " +
@@ -43,13 +45,13 @@ public class BasketActivity extends AppCompatActivity {
             "WHERE Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
     public static final String DELETEFROMBASKET = "DELETE FROM ShoppingCart " +
             "WHERE КатНомер = ? AND Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
+
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
     PreparedStatement ps1 = null;
     ResultSet rs = null;
-    RecyclerView basketRV;
-    RecyclerView.LayoutManager layoutManager;
+
 
     private List<ListItem> arrayListItem;
 
@@ -60,8 +62,6 @@ public class BasketActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
         name = sp.getString("name", "null");
-
-
 
         arrayListItem = new ArrayList<>();
         basketRV = findViewById(R.id.basketListView);

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder> {
+
     private List<ListItem> listItem = new ArrayList<>();
     private List<ListItem> listItemCopy = new ArrayList<>();
 
@@ -47,7 +48,6 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.basket_items, parent, false);
         return new ViewHolder(view);
-
     }
 
     @Override
@@ -66,7 +66,7 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
         return listItem.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView bGroup_TV;
         TextView bCatNum_TV;
