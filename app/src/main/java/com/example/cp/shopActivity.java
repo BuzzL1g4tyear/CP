@@ -9,10 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,6 +52,8 @@ public class shopActivity extends AppCompatActivity {
     public String catNum;
     public String name;
 
+    boolean hasLogged;
+
     public static final String SHOWQ = "SELECT * FROM STOCK";
     public static final String ADDTOBASKET = "INSERT INTO ShoppingCart (КатНомер, Количество, Дата, Клиент)" +
             " VALUES (?,?,?,(SELECT LoginId FROM LoginData WHERE Login = ?))";
@@ -66,9 +72,21 @@ public class shopActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
         name = sp.getString("name", "null");
+        hasLogged = sp.getBoolean("hasLogged", false);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
+
+        Intent intent;
+        if (hasConnection(this)) {
+            if (!hasLogged) {
+                intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        } else {
+            Dialog("Ошибка!", "Вы не подключились к Интернету!");
+        }
 
         setTitle(R.string.labelShop);
 
@@ -238,6 +256,35 @@ public class shopActivity extends AppCompatActivity {
             }
         }
     };
+
+    public static boolean hasConnection(final Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
+    private void Dialog(String title, String mes){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(mes);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

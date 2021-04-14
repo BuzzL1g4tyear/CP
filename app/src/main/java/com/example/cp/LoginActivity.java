@@ -55,14 +55,13 @@ public class LoginActivity extends AppCompatActivity {
             CheckUser checkUser = new CheckUser();
             boolean status = checkUser.execute().get();
             SharedPreferences.Editor e = sp.edit();
-            e.putBoolean("hasLogged", true);
-            e.putString("name",login);
-            e.apply();
-
             if (status) {
-                intent = new Intent(this, HomeActivity.class);
+                intent = new Intent(this, shopActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+                e.putBoolean("hasLogged", true);
+                e.putString("name",login);
+                e.apply();
                 Toast(login + " entered");
             } else {
                 Snack("Неверный логин или пароль");
@@ -98,9 +97,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void Snack(String mes) {
-        View activity_home = findViewById(android.R.id.content);
+        View viewSnack = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar
-                .make(activity_home, mes, Snackbar.LENGTH_LONG);
+                .make(viewSnack, mes, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(getResources().getColor(R.color.colorWhite));
         snackbar.show();
     }
 
@@ -126,7 +126,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (rs.next()) {
                     resultSet = true;
-                    Snack("Вошли!");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

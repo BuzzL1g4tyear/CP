@@ -9,5 +9,11 @@
         android:orderInCategory="1"
         android:title="@string/search"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/addCart"
+        android:icon="@drawable/ic_add_shopping_cart_24"
+        android:orderInCategory="2"
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
 
 </menu>

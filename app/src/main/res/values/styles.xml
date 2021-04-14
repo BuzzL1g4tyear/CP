@@ -29,4 +29,7 @@
         <item name="android:background">@color/colorDialog</item>
     </style>
 
+    <style name="MySnackBarStyle" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:textColor">@color/colorDialog</item>
+    </style>
 </resources>
