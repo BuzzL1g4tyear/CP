@@ -5,15 +5,22 @@
     <item
         android:id="@+id/search"
         android:icon="@drawable/ic_search_black_24dp"
-        app:actionViewClass="android.widget.SearchView"
         android:orderInCategory="1"
         android:title="@string/search"
+        app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/basketToolbar"
         android:icon="@drawable/ic_shopping_cart_24"
         android:orderInCategory="2"
-        android:title="@string/search"
-        app:showAsAction="ifRoom" />
+        android:title="@string/basket"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/basketLogout"
+        android:icon="@drawable/ic_logout_24"
+        android:orderInCategory="2"
+        android:title="@string/logout"
+        app:showAsAction="never" />
 
 </menu>

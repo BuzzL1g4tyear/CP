@@ -80,6 +80,7 @@ public class BasketActivity extends AppCompatActivity {
         runOnUiThread(showBasket);
 
         Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
+        toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbarBasket);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }

@@ -5,59 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/PasTXT"
-        android:layout_width="195dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="372dp"
-        android:ems="10"
-        android:hint="@string/pasTXT"
-        android:importantForAutofill="no"
-        android:inputType="textPassword"
+    <include
+        android:id="@+id/toolbar_login"
+        layout="@layout/toolbar_login"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.447"
-        app:layout_constraintStart_toEndOf="@+id/textView2" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginBottom="372dp"
-        android:text="@string/pasTXT"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/LoginTXT"
-        android:layout_width="195dp"
-        android:layout_height="40dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/loginTXT"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/PasTXT"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.799" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:text="@string/loginTXT"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintHorizontal_bias="0.002"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.768" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -73,5 +31,50 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976"
         app:srcCompat="@drawable/abc_vector_test" />
+
+    <com.google.android.material.textfield.TextInputLayout
+
+        android:id="@+id/textInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="294dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="236dp"
+        android:hint="@string/loginTXT"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/ic_email_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/LoginTXT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="299dp"
+        android:layout_height="61dp"
+        android:layout_marginBottom="141dp"
+        android:hint="@string/pasTXT"
+        app:endIconMode="password_toggle"
+        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintVertical_bias="0.246"
+        app:startIconDrawable="@drawable/ic_password_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/PasTXT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textStyle="bold" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

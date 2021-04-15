@@ -24,8 +24,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".DbActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".BasketActivity"
             android:theme="@style/basketStyle"

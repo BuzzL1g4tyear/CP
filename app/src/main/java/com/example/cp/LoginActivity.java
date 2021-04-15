@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView loginText, PasText;
     String login, Pas;
 
+
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
@@ -38,13 +40,17 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Toolbar toolbar = findViewById(R.id.toolbar_login);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
+        setSupportActionBar(toolbar);
     }
 
     public void onClickAdd(View view) throws ExecutionException, InterruptedException {
         SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                 Context.MODE_PRIVATE);
-        loginText = (TextView) findViewById(R.id.LoginTXT);
-        PasText = (TextView) findViewById(R.id.PasTXT);
+        loginText = findViewById(R.id.LoginTXT);
+        PasText = findViewById(R.id.PasTXT);
 
         login = loginText.getText().toString();
         Pas = PasText.getText().toString();
@@ -60,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 e.putBoolean("hasLogged", true);
-                e.putString("name",login);
+                e.putString("name", login);
                 e.apply();
                 Toast(login + " entered");
             } else {

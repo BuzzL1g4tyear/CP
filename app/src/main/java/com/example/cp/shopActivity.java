@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -94,6 +95,7 @@ public class shopActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.itemsList);
 
         Toolbar toolbarShop = findViewById(R.id.toolbar);
+        toolbarShop.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbarShop);
 
         customArrayAdapter = new CustomArrayAdapter(arrayListItem);
@@ -322,6 +324,16 @@ public class shopActivity extends AppCompatActivity {
                 Intent intent = new Intent(shopActivity.this, BasketActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.basketLogout :
+                SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
+                        Context.MODE_PRIVATE);
+                @SuppressLint("CommitPrefEdits") SharedPreferences.Editor e = sp.edit();
+                e.putBoolean("hasLogged", false);
+                e.putString("name","null");
+                e.apply();
+                Intent intent1 = new Intent(shopActivity.this,LoginActivity.class);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent1);
             default:
                 return super.onOptionsItemSelected(item);
         }
