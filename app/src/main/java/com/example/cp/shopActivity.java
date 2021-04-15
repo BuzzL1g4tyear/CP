@@ -104,7 +104,9 @@ public class shopActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(customArrayAdapter);
 
-        runOnUiThread(showItems);
+        Thread thread = new Thread(showItems);
+        thread.start();
+        customArrayAdapter.notifyDataSetChanged();
 
         customArrayAdapter.setOnClickListener(position -> {
             nameItem = arrayListItem.get(position).getName();
@@ -214,7 +216,7 @@ public class shopActivity extends AppCompatActivity {
                             items.setPrice(rs.getFloat(5));
                             items.setAvailable(rs.getString(6).trim());
                             arrayListItem.add(items);
-                            customArrayAdapter.notifyDataSetChanged();
+
                         }
                         listItem = items;
                     }

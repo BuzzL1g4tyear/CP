@@ -77,7 +77,9 @@ public class BasketActivity extends AppCompatActivity {
         new ItemTouchHelper(callback).attachToRecyclerView(basketRV);
         basketRV.setAdapter(baskedAdapter);
 
-        runOnUiThread(showBasket);
+        Thread thread = new Thread(showBasket);
+        thread.start();
+        baskedAdapter.notifyDataSetChanged();
 
         Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
         toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
@@ -108,7 +110,7 @@ public class BasketActivity extends AppCompatActivity {
                             items.setPrice(rs.getFloat(5));
                             items.setQuantity(rs.getInt(6));
                             arrayListItem.add(items);
-                            baskedAdapter.notifyDataSetChanged();
+
                         }
                         listItem = items;
                     }
