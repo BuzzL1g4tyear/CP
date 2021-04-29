@@ -18,18 +18,18 @@ import java.util.List;
 
 public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder> {
 
-    private List<ListItem> listItem = new ArrayList<>();
-    private List<ListItem> listItemCopy = new ArrayList<>();
+    private List<ListItem> listItem;
+    private List<ListItem> listItemCopy;
 
     public BaskedAdapter(List<ListItem> list) {
-        listItemCopy.addAll(list);
         listItem = list;
+        listItemCopy = listItem;
     }
 
     public void filter(@NotNull String text) {
-        listItem.clear();
+        listItem = new ArrayList<>();
         if (text.isEmpty()) {
-            listItem.addAll(listItemCopy);
+            listItem = listItemCopy;
         } else {
             text = text.toLowerCase();
             for (ListItem item : listItemCopy) {
