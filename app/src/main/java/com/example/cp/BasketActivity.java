@@ -1,7 +1,6 @@
 package com.example.cp;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
@@ -14,6 +13,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,13 +46,18 @@ public class BasketActivity extends AppCompatActivity {
             "WHERE Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
     public static final String DELETEFROMBASKET = "DELETE FROM ShoppingCart " +
             "WHERE КатНомер = ? AND Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
+    public static final String ADDTOORDER = "INSERT INTO AndroidOrders (OrderId, CustomerId, OrderStatus, OrderDate)" +
+            " VALUES (2,1,1,'2021-04-27 15:30:00')";
+    public static final String ADDTOORDERITEM = "INSERT INTO AndroidOrdersItems (odId, odCode, odName, odQuant, odStatus, odOrderId)" +
+            " VALUES (?,?,(SELECT Наименование FROM Stock WHERE КатНомер = ?),?,?,?)";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
     PreparedStatement ps1 = null;
     ResultSet rs = null;
-
+//    java.util.Date utilDate = new java.util.Date();
+//    java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
 
     private List<ListItem> arrayListItem;
 
@@ -140,7 +145,7 @@ public class BasketActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+    ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -180,6 +185,54 @@ public class BasketActivity extends AppCompatActivity {
         }
     };
 
+    private void createOrder() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ps1 = connection.prepareStatement(ADDTOORDERITEM);
+                    for (int i = 0; i < catNumList().size(); i++) {
+                        ps1.setInt(1, 2);//id order
+                        ps1.setString(2, catNumList().get(i));//catNum
+                        ps1.setString(3, catNumList().get(i));//name item
+                        ps1.setFloat(4, quantityList().get(i));//qan item
+                        ps1.setInt(5, 1);//status
+                        ps1.setInt(6, 2);//order id
+                        ps1.execute();
+                        Log.d("MyTag", "run: ok");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+
+    public List<String> catNumList() {
+        List<String> list = new ArrayList<>();
+        if (!arrayListItem.isEmpty()) {
+            for (int i = 0; i < arrayListItem.size(); i++) {
+                ListItem listItemMain = arrayListItem.get(i);
+                list.add(listItemMain.getCatNum());
+            }
+        } else {
+            Toast.makeText(this, "Заказ пустой", Toast.LENGTH_SHORT).show();
+        }
+        return list;
+    }
+
+    public List<Integer> quantityList() {
+        List<Integer> list = new ArrayList<>();
+        if (!arrayListItem.isEmpty()) {
+            for (int i = 0; i < arrayListItem.size(); i++) {
+                ListItem listItemMain = arrayListItem.get(i);
+                list.add(listItemMain.getQuantity());
+            }
+        }
+        return list;
+    }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.basket_toolbar, menu);
@@ -213,10 +266,10 @@ public class BasketActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addCart:
-                Toast.makeText(this, "Отправить заказ", Toast.LENGTH_SHORT).show();
+                createOrder();
                 return true;
             default:
-            return super.onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
         }
     }
 }

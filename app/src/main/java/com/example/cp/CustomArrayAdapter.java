@@ -1,13 +1,11 @@
 package com.example.cp;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,25 +15,25 @@ import java.util.List;
 
 public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.ViewHolder> {
 
-    private List<ListItem> listItem = new ArrayList<>();
-    private List<ListItem> listItemCopy = new ArrayList<>();
+    private List<ListItem> listItem;
+    private List<ListItem> listItemCopy;
     private OnClickListener mOnClickListener;
 
-    public CustomArrayAdapter(List<ListItem> items){
-        listItemCopy.addAll(items);
+    public CustomArrayAdapter(List<ListItem> items) {
         listItem = items;
+        listItemCopy = listItem;
     }
 
     public void filter(@NotNull String text) {
-        listItem.clear();
+        listItem = new ArrayList<>();
         if (text.isEmpty()) {
-            listItem.addAll(listItemCopy);
+            listItem = listItemCopy;
         } else {
             text = text.toLowerCase();
             for (ListItem item : listItemCopy) {
                 if (item.Name.toLowerCase().contains(text) || item.CatNum.toLowerCase().contains(text)
                         || item.Brand.toLowerCase().contains(text) || item.Group.toLowerCase().contains(text)
-                        || item.Available.toLowerCase().contains(text) || String.valueOf(item.Price).toLowerCase().contains(text) ) {
+                        || item.Available.toLowerCase().contains(text) || String.valueOf(item.Price).toLowerCase().contains(text)) {
                     listItem.add(item);
                 }
             }
@@ -43,13 +41,12 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.
         notifyDataSetChanged();
     }
 
-    public interface OnClickListener{
+    public interface OnClickListener {
         void onItemClick(int position);
     }
 
-    public void setOnClickListener(OnClickListener listener){
+    public void setOnClickListener(OnClickListener listener) {
         mOnClickListener = listener;
-
     }
 
     @NonNull
@@ -75,7 +72,7 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.
         return listItem.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView sGroup_TV;
         TextView sBrand_TV;
@@ -97,9 +94,9 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(listener!=null){
+                    if (listener != null) {
                         int position = getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION){
+                        if (position != RecyclerView.NO_POSITION) {
                             listener.onItemClick(position);
                         }
                     }

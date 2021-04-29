@@ -29,6 +29,8 @@ import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +42,7 @@ import java.util.List;
 public class shopActivity extends AppCompatActivity {
     private static final String MY_SETTINGS = "my_settings";
     private RecyclerView recyclerView;
-    private CustomArrayAdapter customArrayAdapter;
+    private static CustomArrayAdapter customArrayAdapter;
     private List<ListItem> arrayListItem;
     RecyclerView.LayoutManager layoutManager;
 
@@ -106,6 +108,12 @@ public class shopActivity extends AppCompatActivity {
 
         Thread thread = new Thread(showItems);
         thread.start();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         customArrayAdapter.notifyDataSetChanged();
 
         customArrayAdapter.setOnClickListener(position -> {
@@ -261,7 +269,7 @@ public class shopActivity extends AppCompatActivity {
         }
     };
 
-    public static boolean hasConnection(final Context context) {
+    public static boolean hasConnection(@NotNull final Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiInfo != null && wifiInfo.isConnected()) {
@@ -299,19 +307,16 @@ public class shopActivity extends AppCompatActivity {
         searchView.setQueryHint("Поиск");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            CustomArrayAdapter adapter = new CustomArrayAdapter(arrayListItem);
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                adapter.filter(query);
-                recyclerView.setAdapter(adapter);
+                customArrayAdapter.filter(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.filter(newText);
-                recyclerView.setAdapter(adapter);
+                customArrayAdapter.filter(newText);
                 return true;
             }
         });

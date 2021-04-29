@@ -35,7 +35,7 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
             for (ListItem item : listItemCopy) {
                 if (item.CatNum.toLowerCase().contains(text) || item.Brand.toLowerCase().contains(text)
                         || String.valueOf(item.Quantity).toLowerCase().contains(text) || item.Name.toLowerCase().contains(text)
-                        ||  String.valueOf(item.Price).toLowerCase().contains(text) || item.Group.toLowerCase().contains(text)) {
+                        || String.valueOf(item.Price).toLowerCase().contains(text) || item.Group.toLowerCase().contains(text)) {
                     listItem.add(item);
                 }
             }
@@ -66,7 +66,7 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
         return listItem.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView bGroup_TV;
         TextView bCatNum_TV;
