@@ -5,15 +5,33 @@
     <item
         android:id="@+id/search"
         android:icon="@drawable/ic_search_black_24dp"
-        app:actionViewClass="android.widget.SearchView"
         android:orderInCategory="1"
         android:title="@string/search"
+        app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom" />
+
     <item
-        android:id="@+id/addCart"
-        android:icon="@drawable/ic_add_shopping_cart_24"
+        android:id="@+id/action_button"
+        android:icon="@drawable/ic_more_vert_24"
         android:orderInCategory="2"
-        android:title="@string/search"
-        app:showAsAction="ifRoom" />
+        android:title=""
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/addCart"
+                android:icon="@drawable/ic_add_shopping_cart_24"
+                android:orderInCategory="2"
+                android:title="@string/addOrder"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/basketOrder"
+                android:icon="@drawable/ic_history_24"
+                android:orderInCategory="2"
+                android:title="@string/orders"
+                app:showAsAction="never" />
+        </menu>
+
+    </item>
 
 </menu>

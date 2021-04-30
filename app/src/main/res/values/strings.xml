@@ -32,4 +32,6 @@
     <string name="labelBasket">Корзина</string>
     <string name="logout">Выйти из аккаунта</string>
     <string name="value_fragment">Количество</string>
+    <string name="addOrder">Добавить заказ</string>
+    <string name="orders">Заказы</string>
 </resources>

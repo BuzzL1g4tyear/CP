@@ -18,7 +18,15 @@ public class ListItem {
     String Available;
     String Customer;
     Timestamp Data;
+    String Status;
 
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
+    }
 
     public int getQuantity() {
         return Quantity;

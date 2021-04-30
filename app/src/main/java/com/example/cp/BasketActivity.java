@@ -3,7 +3,9 @@ package com.example.cp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -81,13 +83,13 @@ public class BasketActivity extends AppCompatActivity {
         baskedAdapter = new BaskedAdapter(arrayListItem);
         basketRV.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
-        basketRV.setLayoutManager(layoutManager);
         new ItemTouchHelper(callback).attachToRecyclerView(basketRV);
-        basketRV.setAdapter(baskedAdapter);
 
         Thread thread = new Thread(showBasket);
         thread.start();
         baskedAdapter.notifyDataSetChanged();
+        basketRV.setLayoutManager(layoutManager);
+        basketRV.setAdapter(baskedAdapter);
 
         Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
         toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
@@ -137,18 +139,6 @@ public class BasketActivity extends AppCompatActivity {
             }
         }
     };
-
-    public void openDialog(String title) {
-        Dialog dialog = new Dialog(BasketActivity.this, R.style.CustomStyleDialog);
-        LayoutInflater inflater = this.getLayoutInflater();
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.fragment_basket, null);
-
-        btnUPD = view.findViewById(R.id.btnUpd);
-
-        dialog.setContentView(view);
-        dialog.setTitle(title);
-        dialog.show();
-    }
 
     ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         @Override
@@ -214,9 +204,9 @@ public class BasketActivity extends AppCompatActivity {
                 try {
 
                     ps1 = connection.prepareStatement(ID);
-                    ps1.setTimestamp(1,sqlDate);
+                    ps1.setTimestamp(1, sqlDate);
                     rs = ps1.executeQuery();
-                    while (rs.next()){
+                    while (rs.next()) {
                         idOrder = rs.getInt(1);
                     }
 
@@ -261,6 +251,15 @@ public class BasketActivity extends AppCompatActivity {
         return list;
     }
 
+    private void replaceFragment(Fragment fragment){
+        ConstraintLayout layout = findViewById(R.id.data_container);
+        layout.removeAllViews();
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.data_container, fragment)
+                .commit();
+    }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.basket_toolbar, menu);
@@ -294,8 +293,11 @@ public class BasketActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addCart:
-                createOrder();
+                //createOrder();
+                Toast.makeText(this, "Заказ отправлен", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.basketOrder:
+                replaceFragment(new OrderFragment());
             default:
                 return super.onOptionsItemSelected(item);
         }

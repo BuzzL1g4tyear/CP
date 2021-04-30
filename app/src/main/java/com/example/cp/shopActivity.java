@@ -115,7 +115,6 @@ public class shopActivity extends AppCompatActivity {
 
         Thread thread = new Thread(showItems);
         thread.start();
-
     }
 
     @Override
