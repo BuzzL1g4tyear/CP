@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BasketActivity extends AppCompatActivity {
 
@@ -36,6 +37,8 @@ public class BasketActivity extends AppCompatActivity {
     Button btnUPD;
     private static final String MY_SETTINGS = "my_settings";
     String name;
+    java.util.Date utilDate;
+    java.sql.Timestamp sqlDate;
     String catNum;
     RecyclerView basketRV;
     RecyclerView.LayoutManager layoutManager;
@@ -46,18 +49,18 @@ public class BasketActivity extends AppCompatActivity {
             "WHERE Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
     public static final String DELETEFROMBASKET = "DELETE FROM ShoppingCart " +
             "WHERE КатНомер = ? AND Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
-    public static final String ADDTOORDER = "INSERT INTO AndroidOrders (OrderId, CustomerId, OrderStatus, OrderDate)" +
-            " VALUES (2,1,1,'2021-04-27 15:30:00')";
-    public static final String ADDTOORDERITEM = "INSERT INTO AndroidOrdersItems (odId, odCode, odName, odQuant, odStatus, odOrderId)" +
-            " VALUES (?,?,(SELECT Наименование FROM Stock WHERE КатНомер = ?),?,?,?)";
+    public static final String ADDTOORDER = "INSERT INTO AndroidOrders (CustomerId, OrderStatus, OrderDate)" +
+            " VALUES ((SELECT LoginId FROM LoginData WHERE Login = ?),?,?)";
+    public static final String ADDTOORDERITEM = "INSERT INTO AndroidOrdersItems ( odCode, odName, odQuant, odStatus, odOrderId)" +
+            " VALUES (?,(SELECT Наименование FROM Stock WHERE КатНомер = ?),?,?,?)";
+
+    public static final String ID = "SELECT OrderId FROM AndroidOrders WHERE OrderDate = ?";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
     PreparedStatement ps1 = null;
     ResultSet rs = null;
-//    java.util.Date utilDate = new java.util.Date();
-//    java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
 
     private List<ListItem> arrayListItem;
 
@@ -89,7 +92,9 @@ public class BasketActivity extends AppCompatActivity {
         Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
         toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbarBasket);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        utilDate = new java.util.Date();
+        sqlDate = new java.sql.Timestamp(utilDate.getTime());
     }
 
     Runnable showBasket = new Runnable() {
@@ -186,20 +191,43 @@ public class BasketActivity extends AppCompatActivity {
     };
 
     private void createOrder() {
-        Thread thread = new Thread(new Runnable() {
+        Thread thread0 = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    ps = connection.prepareStatement(ADDTOORDER);
+
+                    ps.setString(1, name);//custumerID
+                    ps.setInt(2, 1);//orderSt
+                    ps.setTimestamp(3, sqlDate);//date
+                    ps.execute();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread0.start();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int idOrder = 0;
+                try {
+
+                    ps1 = connection.prepareStatement(ID);
+                    ps1.setTimestamp(1,sqlDate);
+                    rs = ps1.executeQuery();
+                    while (rs.next()){
+                        idOrder = rs.getInt(1);
+                    }
+
                     ps1 = connection.prepareStatement(ADDTOORDERITEM);
                     for (int i = 0; i < catNumList().size(); i++) {
-                        ps1.setInt(1, 2);//id order
-                        ps1.setString(2, catNumList().get(i));//catNum
-                        ps1.setString(3, catNumList().get(i));//name item
-                        ps1.setFloat(4, quantityList().get(i));//qan item
-                        ps1.setInt(5, 1);//status
-                        ps1.setInt(6, 2);//order id
+                        ps1.setString(1, catNumList().get(i));//catNum
+                        ps1.setString(2, catNumList().get(i));//name item
+                        ps1.setFloat(3, quantityList().get(i));//qan item
+                        ps1.setInt(4, 1);//status
+                        ps1.setInt(5, idOrder);//order id
                         ps1.execute();
-                        Log.d("MyTag", "run: ok");
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

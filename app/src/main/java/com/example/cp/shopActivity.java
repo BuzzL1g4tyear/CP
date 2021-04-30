@@ -1,6 +1,7 @@
 package com.example.cp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
@@ -17,7 +18,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +32,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,6 +54,7 @@ public class shopActivity extends AppCompatActivity {
 
     public Button btnMin, btnPlu, btnOK;
     public EditText text;
+    private TextInputLayout inputLayout;
 
     private int count = 0;
     public String quantity;
@@ -134,51 +141,72 @@ public class shopActivity extends AppCompatActivity {
         btnPlu = view.findViewById(R.id.btnPlus);
         btnOK = view.findViewById(R.id.btnOK);
 
-        text.setText("0");
-        btnMin.setOnClickListener(new View.OnClickListener() {
+        inputLayout = view.findViewById(R.id.textInputLayout);
+
+
+        text.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                if (Integer.parseInt(text.getText().toString()) > 0) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    if (text.getText().toString().trim().isEmpty()) {
-                        text.setText("0");
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!text.getText().toString().isEmpty()) {
+                    if (text.length() > 9) {
+                        inputLayout.setError("big data");
+                        btnOK.setClickable(false);
+                        btnPlu.setClickable(false);
+                    } else {
+                        inputLayout.setError(null);
+                        btnOK.setClickable(true);
+                        btnPlu.setClickable(true);
                     }
-
-                    count = Integer.parseInt(text.getText().toString());
-                    count = count - 1;
-                    String translate = String.valueOf(count);
-                    text.setText(translate);
-                } else {
-                    Toast("Нельзя выбрать число меньше!");
                 }
             }
-        });
-        btnPlu.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View v) {
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        text.setText("0");
+        btnMin.setOnClickListener(v -> {
+            if (Integer.parseInt(text.getText().toString()) > 0) {
+
+                if (text.getText().toString().trim().isEmpty()) {
+                    text.setText("0");
+                }
+
                 count = Integer.parseInt(text.getText().toString());
-                count = count + 1;
+                count = count - 1;
                 String translate = String.valueOf(count);
                 text.setText(translate);
+            } else {
+                Toast("Нельзя выбрать число меньше!");
             }
         });
-        btnOK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                quantity = text.getText().toString();
-                if (CheckFields(quantity)) {
-                    count = Integer.parseInt(text.getText().toString());
-                    if (count != 0) {
-                        Thread thread1 = new Thread(addToBasket);
-                        thread1.start();
-                        Toast(nameItem + " добавленно в корзину " + quantity);
-                        dialog.dismiss();
-                    } else {
-                        Toast("Выбранно количество 0");
-                    }
+        btnPlu.setOnClickListener(v -> {
+            count = Integer.parseInt(text.getText().toString());
+            count = count + 1;
+            String translate = String.valueOf(count);
+            text.setText(translate);
+        });
+        btnOK.setOnClickListener(v -> {
+            quantity = text.getText().toString();
+            if (CheckFields(quantity)) {
+                count = Integer.parseInt(text.getText().toString());
+                if (count != 0) {
+                    Thread thread1 = new Thread(addToBasket);
+                    thread1.start();
+                    Toast(nameItem + " добавленно в корзину " + quantity);
+                    dialog.dismiss();
                 } else {
-                    Toast("Пустое поле");
+                    Toast("Выбранно количество 0");
                 }
+            } else {
+                Toast("Пустое поле");
             }
         });
 
@@ -286,7 +314,7 @@ public class shopActivity extends AppCompatActivity {
         return false;
     }
 
-    private void Dialog(String title, String mes){
+    private void Dialog(String title, String mes) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title).setMessage(mes);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -331,14 +359,14 @@ public class shopActivity extends AppCompatActivity {
                 Intent intent = new Intent(shopActivity.this, BasketActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.basketLogout :
+            case R.id.basketLogout:
                 SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
                         Context.MODE_PRIVATE);
                 @SuppressLint("CommitPrefEdits") SharedPreferences.Editor e = sp.edit();
                 e.putBoolean("hasLogged", false);
-                e.putString("name","null");
+                e.putString("name", "null");
                 e.apply();
-                Intent intent1 = new Intent(shopActivity.this,LoginActivity.class);
+                Intent intent1 = new Intent(shopActivity.this, LoginActivity.class);
                 intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent1);
             default:
