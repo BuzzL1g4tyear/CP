@@ -62,7 +62,9 @@ public class BasketActivity extends AppCompatActivity {
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
     PreparedStatement ps1 = null;
+    PreparedStatement ps2 = null;
     ResultSet rs = null;
+    ResultSet rs1 = null;
 
     private List<ListItem> arrayListItem;
 
@@ -85,18 +87,16 @@ public class BasketActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         new ItemTouchHelper(callback).attachToRecyclerView(basketRV);
 
-        Thread thread = new Thread(showBasket);
-        thread.start();
         baskedAdapter.notifyDataSetChanged();
         basketRV.setLayoutManager(layoutManager);
         basketRV.setAdapter(baskedAdapter);
+        Thread thread = new Thread(showBasket);
+        thread.start();
 
         Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
         toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbarBasket);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        utilDate = new java.util.Date();
-        sqlDate = new java.sql.Timestamp(utilDate.getTime());
     }
 
     Runnable showBasket = new Runnable() {
@@ -181,50 +181,39 @@ public class BasketActivity extends AppCompatActivity {
     };
 
     private void createOrder() {
-        Thread thread0 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ps = connection.prepareStatement(ADDTOORDER);
+        Thread thread0 = new Thread(() -> {
+            try {
+                int idOrder = 0;
+                utilDate = new java.util.Date();
+                sqlDate = new java.sql.Timestamp(utilDate.getTime());
 
-                    ps.setString(1, name);//custumerID
-                    ps.setInt(2, 1);//orderSt
-                    ps.setTimestamp(3, sqlDate);//date
-                    ps.execute();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                ps = connection.prepareStatement(ADDTOORDER);
+                ps.setString(1, name);//custumerID
+                ps.setInt(2, 1);//orderSt
+                ps.setTimestamp(3, sqlDate);//date
+                ps.execute();
+
+                ps2 = connection.prepareStatement(ID);
+                ps2.setTimestamp(1, sqlDate);
+                rs1 = ps2.executeQuery();
+                while (rs1.next()) {
+                    idOrder = rs1.getInt(1);
                 }
+
+                ps1 = connection.prepareStatement(ADDTOORDERITEM);
+                for (int i = 0; i < catNumList().size(); i++) {
+                    ps1.setString(1, catNumList().get(i));//catNum
+                    ps1.setString(2, catNumList().get(i));//name item
+                    ps1.setFloat(3, quantityList().get(i));//qan item
+                    ps1.setInt(4, 1);//status
+                    ps1.setInt(5, idOrder);//order id
+                    ps1.execute();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
         thread0.start();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int idOrder = 0;
-                try {
-
-                    ps1 = connection.prepareStatement(ID);
-                    ps1.setTimestamp(1, sqlDate);
-                    rs = ps1.executeQuery();
-                    while (rs.next()) {
-                        idOrder = rs.getInt(1);
-                    }
-
-                    ps1 = connection.prepareStatement(ADDTOORDERITEM);
-                    for (int i = 0; i < catNumList().size(); i++) {
-                        ps1.setString(1, catNumList().get(i));//catNum
-                        ps1.setString(2, catNumList().get(i));//name item
-                        ps1.setFloat(3, quantityList().get(i));//qan item
-                        ps1.setInt(4, 1);//status
-                        ps1.setInt(5, idOrder);//order id
-                        ps1.execute();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
     }
 
     public List<String> catNumList() {
@@ -251,7 +240,7 @@ public class BasketActivity extends AppCompatActivity {
         return list;
     }
 
-    private void replaceFragment(Fragment fragment){
+    private void replaceFragment(Fragment fragment) {
         ConstraintLayout layout = findViewById(R.id.data_container);
         layout.removeAllViews();
         getSupportFragmentManager().beginTransaction()
@@ -293,7 +282,7 @@ public class BasketActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addCart:
-                //createOrder();
+                createOrder();
                 Toast.makeText(this, "Заказ отправлен", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.basketOrder:
