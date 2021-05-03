@@ -32,6 +32,8 @@
             android:theme="@style/basketStyle"
             android:parentActivityName=".shopActivity">
         </activity>
+        <activity android:name=".OrderFragment"
+            android:parentActivityName=".BasketActivity"/>
     </application>
 
 </manifest>

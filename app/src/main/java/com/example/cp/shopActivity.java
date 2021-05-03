@@ -67,13 +67,10 @@ public class shopActivity extends AppCompatActivity {
     public static final String SHOWQ = "SELECT * FROM STOCK";
     public static final String ADDTOBASKET = "INSERT INTO ShoppingCart (КатНомер, Количество, Дата, Клиент)" +
             " VALUES (?,?,?,(SELECT LoginId FROM LoginData WHERE Login = ?))";
-    public static final String UPDBASKET = "UPDATE ShoppingCart SET Количество = ?" +
-            "WHERE КатНомер = ? AND Клиент = ?";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps1 = null;
-    PreparedStatement ps2 = null;
     Statement st = null;
     ResultSet rs = null;
 
@@ -107,14 +104,13 @@ public class shopActivity extends AppCompatActivity {
         toolbarShop.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbarShop);
 
+        runOnUiThread(showItems);
+
         customArrayAdapter = new CustomArrayAdapter(arrayListItem);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(customArrayAdapter);
-
-        Thread thread = new Thread(showItems);
-        thread.start();
     }
 
     @Override
@@ -141,7 +137,6 @@ public class shopActivity extends AppCompatActivity {
         btnOK = view.findViewById(R.id.btnOK);
 
         inputLayout = view.findViewById(R.id.textInputLayout);
-
 
         text.addTextChangedListener(new TextWatcher() {
             @Override
@@ -230,7 +225,6 @@ public class shopActivity extends AppCompatActivity {
     }
 
     Runnable showItems = new Runnable() {
-        ListItem listItem;
 
         @Override
         public void run() {
@@ -251,9 +245,7 @@ public class shopActivity extends AppCompatActivity {
                             items.setPrice(rs.getFloat(5));
                             items.setAvailable(rs.getString(6).trim());
                             arrayListItem.add(items);
-
                         }
-                        listItem = items;
                     }
                 }
             } catch (SQLException e) {
@@ -298,6 +290,7 @@ public class shopActivity extends AppCompatActivity {
 
     public static boolean hasConnection(@NotNull final Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;

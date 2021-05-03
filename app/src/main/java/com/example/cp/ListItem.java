@@ -1,24 +1,37 @@
 package com.example.cp;
 
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import java.sql.Timestamp;
 
 public class ListItem {
 
     int Quantity;
     String Group;
+    String Num;
     String Brand;
     String CatNum;
     String Name;
     float Price;
     String Available;
     String Customer;
-    Timestamp Data;
+    Timestamp Date;
     String Status;
+    String orStatus;
+
+    public String getNum() {
+        return Num;
+    }
+
+    public void setNum(String num) {
+        Num = num;
+    }
+
+    public String getOrStatus() {
+        return orStatus;
+    }
+
+    public void setOrStatus(String orStatus) {
+        this.orStatus = orStatus;
+    }
 
     public String getStatus() {
         return Status;
@@ -44,12 +57,12 @@ public class ListItem {
         Customer = customer;
     }
 
-    public Timestamp getData() {
-        return Data;
+    public Timestamp getDate() {
+        return Date;
     }
 
-    public void setData(Timestamp data) {
-        Data = data;
+    public void setDate(Timestamp date) {
+        Date = date;
     }
 
     public String getBrand() {

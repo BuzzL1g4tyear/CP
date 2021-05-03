@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +37,6 @@ import java.util.Objects;
 public class BasketActivity extends AppCompatActivity {
 
     private BaskedAdapter baskedAdapter;
-    Button btnUPD;
     private static final String MY_SETTINGS = "my_settings";
     String name;
     java.util.Date utilDate;
@@ -67,7 +67,7 @@ public class BasketActivity extends AppCompatActivity {
     ResultSet rs1 = null;
 
     private List<ListItem> arrayListItem;
-
+// TODO: 02.05.2021  delete from basket after create order
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,11 +87,10 @@ public class BasketActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         new ItemTouchHelper(callback).attachToRecyclerView(basketRV);
 
-        baskedAdapter.notifyDataSetChanged();
+        runOnUiThread(showBasket);
+
         basketRV.setLayoutManager(layoutManager);
         basketRV.setAdapter(baskedAdapter);
-        Thread thread = new Thread(showBasket);
-        thread.start();
 
         Toolbar toolbarBasket = findViewById(R.id.toolbarBasket);
         toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
@@ -100,8 +99,6 @@ public class BasketActivity extends AppCompatActivity {
     }
 
     Runnable showBasket = new Runnable() {
-        ListItem listItem;
-
         @Override
         public void run() {
             try {
@@ -122,9 +119,7 @@ public class BasketActivity extends AppCompatActivity {
                             items.setPrice(rs.getFloat(5));
                             items.setQuantity(rs.getInt(6));
                             arrayListItem.add(items);
-
                         }
-                        listItem = items;
                     }
                 }
             } catch (SQLException e) {
@@ -240,15 +235,6 @@ public class BasketActivity extends AppCompatActivity {
         return list;
     }
 
-    private void replaceFragment(Fragment fragment) {
-        ConstraintLayout layout = findViewById(R.id.data_container);
-        layout.removeAllViews();
-        getSupportFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.data_container, fragment)
-                .commit();
-    }
-
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.basket_toolbar, menu);
@@ -286,7 +272,8 @@ public class BasketActivity extends AppCompatActivity {
                 Toast.makeText(this, "Заказ отправлен", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.basketOrder:
-                replaceFragment(new OrderFragment());
+                Intent intent = new Intent(BasketActivity.this,OrderFragment.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }
