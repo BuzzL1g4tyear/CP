@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/o_date"
-        android:layout_width="30dp"
+        android:layout_width="62dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
@@ -24,14 +24,14 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_weight="1"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/o_catNum"
-        android:layout_width="30dp"
+        android:layout_width="62dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
@@ -41,7 +41,7 @@
 
     <TextView
         android:id="@+id/o_name"
-        android:layout_width="30dp"
+        android:layout_width="62dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
@@ -51,7 +51,7 @@
 
     <TextView
         android:id="@+id/o_quant"
-        android:layout_width="30dp"
+        android:layout_width="62dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
@@ -60,7 +60,7 @@
 
     <TextView
         android:id="@+id/o_status"
-        android:layout_width="30dp"
+        android:layout_width="62dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
@@ -71,10 +71,10 @@
         android:id="@+id/or_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
+        android:layout_marginStart="76dp"
         android:layout_marginTop="32dp"
         android:layout_weight="1"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/or_num"
         app:layout_constraintTop_toTopOf="parent" />
