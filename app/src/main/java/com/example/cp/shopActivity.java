@@ -1,14 +1,5 @@
 package com.example.cp;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuItemCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -20,9 +11,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +23,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -106,11 +105,32 @@ public class shopActivity extends AppCompatActivity {
 
         runOnUiThread(showItems);
 
-        customArrayAdapter = new CustomArrayAdapter(arrayListItem);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+        layoutManager = (new LinearLayoutManager(this));
         recyclerView.setLayoutManager(layoutManager);
+        customArrayAdapter = new CustomArrayAdapter(arrayListItem, recyclerView);
         recyclerView.setAdapter(customArrayAdapter);
+
+        customArrayAdapter.setLoad_more(() -> {
+            if (arrayListItem.size() <= 20) {
+                arrayListItem.add(null);
+                customArrayAdapter.notifyItemChanged(arrayListItem.size() - 1);
+                new Handler().postDelayed(() -> {
+                    arrayListItem.remove(arrayListItem.size() - 1);
+                    customArrayAdapter.notifyItemRemoved(arrayListItem.size());
+
+                    int index = arrayListItem.size();
+                    int end = index + 10;
+                    for (int i = index; i < end; i++) {
+//todo to cho dabavlat'
+                    }
+                    customArrayAdapter.notifyDataSetChanged();
+                    customArrayAdapter.setLoaded();
+                }, 5000);
+            } else {
+                Toast("End");
+            }
+        });
     }
 
     @Override
