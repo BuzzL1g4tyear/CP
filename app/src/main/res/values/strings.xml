@@ -36,5 +36,5 @@
     <string name="orders">Заказы</string>
 
     <string name="no_ethernet">Нет Интернета</string>
-    <string name="reconnection_attempt">Попытка переподключения</string>
+    <string name="reconnection_attempt">Отсутствует Интернет подключение</string>
 </resources>
