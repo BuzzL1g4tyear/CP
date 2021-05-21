@@ -13,10 +13,6 @@ public class ConnectionHelper {
     public static final String PAS = "LB@m$V#pJCj6fA";
     public static final int PORT = 7878;
 
-    private int id;
-    private String num;
-    private String name;
-
     public ConnectionHelper() {
 
     }
@@ -40,9 +36,4 @@ public class ConnectionHelper {
         return con;
     }
 
-    public ConnectionHelper(int id, String num, String name) {
-        this.id = id;
-        this.num = num;
-        this.name = name;
-    }
 }

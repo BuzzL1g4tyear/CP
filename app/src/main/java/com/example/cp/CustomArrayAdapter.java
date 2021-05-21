@@ -28,7 +28,7 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private List<ListItem> listItemCopy;
     private OnClickListener mOnClickListener;
 
-    public CustomArrayAdapter(List<ListItem> items, RecyclerView recyclerView) {
+    public CustomArrayAdapter(List<ListItem> items, @NotNull RecyclerView recyclerView) {
         listItem = items;
         listItemCopy = listItem;
 

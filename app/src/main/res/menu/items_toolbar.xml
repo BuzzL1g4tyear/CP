@@ -11,8 +11,8 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:icon="@drawable/ic_more_vert_24"
         android:id="@+id/action_button"
+        android:icon="@drawable/ic_more_vert_24"
         android:orderInCategory="2"
         android:title=""
         app:showAsAction="ifRoom">

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -14,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,9 +29,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.jetbrains.annotations.NotNull;
@@ -83,67 +85,90 @@ public class shopActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
 
-        Intent intent;
-        if (hasConnection(this)) {
+        recyclerView = findViewById(R.id.itemsList);
+        arrayListItem = new ArrayList<>();
+
+        if (!hasConnection(shopActivity.this)) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.layoutShop, new NoEthernetFragment());
+            ft.commit();
+        } else {
             if (!hasLogged) {
-                intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-            }
-        } else {
-            Dialog("Ошибка!", "Вы не подключились к Интернету!");
-        }
-
-        setTitle(R.string.labelShop);
-
-        arrayListItem = new ArrayList<>();
-        recyclerView = findViewById(R.id.itemsList);
-
-        Toolbar toolbarShop = findViewById(R.id.toolbar);
-        toolbarShop.setTitleTextColor(getResources().getColor(R.color.colorWhite));
-        setSupportActionBar(toolbarShop);
-
-        runOnUiThread(showItems);
-
-        recyclerView.setHasFixedSize(true);
-        layoutManager = (new LinearLayoutManager(this));
-        recyclerView.setLayoutManager(layoutManager);
-        customArrayAdapter = new CustomArrayAdapter(arrayListItem, recyclerView);
-        recyclerView.setAdapter(customArrayAdapter);
-
-        customArrayAdapter.setLoad_more(() -> {
-            if (arrayListItem.size() <= 20) {
-                arrayListItem.add(null);
-                customArrayAdapter.notifyItemChanged(arrayListItem.size() - 1);
-                new Handler().postDelayed(() -> {
-                    arrayListItem.remove(arrayListItem.size() - 1);
-                    customArrayAdapter.notifyItemRemoved(arrayListItem.size());
-
-                    int index = arrayListItem.size();
-                    int end = index + 10;
-                    for (int i = index; i < end; i++) {
-//todo to cho dabavlat'
-                    }
-                    customArrayAdapter.notifyDataSetChanged();
-                    customArrayAdapter.setLoaded();
-                }, 5000);
             } else {
-                Toast("End");
+                Thread thread = new Thread(showItems);
+                thread.start();
+                Toolbar toolbarShop = findViewById(R.id.toolbar_shop);
+                toolbarShop.setTitleTextColor(getResources().getColor(R.color.colorWhite));
+                setSupportActionBar(toolbarShop);
+
+                setTitle(R.string.labelShop);
+                recyclerView.setHasFixedSize(true);
+                layoutManager = (new LinearLayoutManager(this));
+                recyclerView.setLayoutManager(layoutManager);
+                customArrayAdapter = new CustomArrayAdapter(arrayListItem, recyclerView);
+                recyclerView.setAdapter(customArrayAdapter);
+
+                customArrayAdapter.setLoad_more(() -> {
+                    if (arrayListItem.size() <= 50) {
+                        arrayListItem.add(null);
+                        customArrayAdapter.notifyItemChanged(arrayListItem.size() - 1);
+                        new Handler().postDelayed(() -> {
+                            arrayListItem.remove(arrayListItem.size() - 1);
+                            customArrayAdapter.notifyItemRemoved(arrayListItem.size());
+
+                            int index = arrayListItem.size();
+                            int end = index + 10;
+
+                            try {
+                                st = connection.createStatement();
+                                rs = st.executeQuery(SHOWQ);
+
+                                if (rs != null) {
+                                    while (rs.next()) {
+                                        ListItem items = new ListItem();
+
+                                        for (int i = index; i < end; i++) {
+                                            items.setGroup(rs.getString(1).trim());
+                                            items.setBrand(rs.getString(2).trim());
+                                            items.setCatNum(rs.getString(3).trim());
+                                            items.setName(rs.getString(4).trim());
+                                            items.setPrice(rs.getFloat(5));
+                                            items.setAvailable(rs.getString(6).trim());
+                                            arrayListItem.add(items);
+                                        }
+                                    }
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+
+                            customArrayAdapter.notifyDataSetChanged();
+                            customArrayAdapter.setLoaded();
+                        }, 3000);
+                    } else {
+                        Toast("End");
+                    }
+                });
             }
-        });
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        customArrayAdapter.notifyDataSetChanged();
+        if (hasConnection(shopActivity.this)) {
+            customArrayAdapter.notifyDataSetChanged();
 
-        customArrayAdapter.setOnClickListener(position -> {
-            nameItem = arrayListItem.get(position).getName();
-            catNum = arrayListItem.get(position).getCatNum();
+            customArrayAdapter.setOnClickListener(position -> {
+                nameItem = arrayListItem.get(position).getName();
+                catNum = arrayListItem.get(position).getCatNum();
 
-            openDialog(nameItem);
-        });
+                openDialog(nameItem);
+            });
+        }
     }
 
     public void openDialog(String title) {
@@ -161,7 +186,6 @@ public class shopActivity extends AppCompatActivity {
         text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -308,34 +332,37 @@ public class shopActivity extends AppCompatActivity {
         }
     };
 
+    private void Dialog(String title, String mes) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(shopActivity.this);
+        builder.setTitle(title).setMessage(mes);
+        builder.setPositiveButton("OK", (dialog, id) -> dialog.dismiss());
+        builder.show();
+    }
+
+    public void Snack(String mes) {
+        View viewSnack = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar
+                .make(viewSnack, mes, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(getResources().getColor(R.color.colorWhite));
+        snackbar.show();
+    }
+
     public static boolean hasConnection(@NotNull final Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         assert cm != null;
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiInfo != null && wifiInfo.isConnected()) {
+            Log.d("MyTag", "hasConnection: wifi");
             return true;
         }
         wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if (wifiInfo != null && wifiInfo.isConnected()) {
+            Log.d("MyTag", "hasConnection: mob");
             return true;
         }
         wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        return false;
-    }
-
-    private void Dialog(String title, String mes) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title).setMessage(mes);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
+        Log.d("MyTag", "hasConnection: not");
+        return wifiInfo != null && wifiInfo.isConnected();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -345,21 +372,22 @@ public class shopActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
         searchView.setQueryHint("Поиск");
+        if (hasConnection(this)) {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    customArrayAdapter.filter(query);
+                    return true;
+                }
 
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                customArrayAdapter.filter(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                customArrayAdapter.filter(newText);
-                return true;
-            }
-        });
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    customArrayAdapter.filter(newText);
+                    return true;
+                }
+            });
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -368,19 +396,27 @@ public class shopActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.basketToolbar:
-                Intent intent = new Intent(shopActivity.this, BasketActivity.class);
-                startActivity(intent);
-                return true;
+                if (hasConnection(this)) {
+                    Intent intent = new Intent(shopActivity.this, BasketActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else {
+                    Snack(getString(R.string.no_ethernet));
+                }
             case R.id.basketLogout:
-                SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
-                        Context.MODE_PRIVATE);
-                @SuppressLint("CommitPrefEdits") SharedPreferences.Editor e = sp.edit();
-                e.putBoolean("hasLogged", false);
-                e.putString("name", "null");
-                e.apply();
-                Intent intent1 = new Intent(shopActivity.this, LoginActivity.class);
-                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent1);
+                if (hasConnection(this)) {
+                    SharedPreferences sp = getSharedPreferences(MY_SETTINGS,
+                            Context.MODE_PRIVATE);
+                    @SuppressLint("CommitPrefEdits") SharedPreferences.Editor e = sp.edit();
+                    e.putBoolean("hasLogged", false);
+                    e.putString("name", "null");
+                    e.apply();
+                    Intent intent1 = new Intent(shopActivity.this, LoginActivity.class);
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent1);
+                } else {
+                    Snack(getString(R.string.no_ethernet));
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }

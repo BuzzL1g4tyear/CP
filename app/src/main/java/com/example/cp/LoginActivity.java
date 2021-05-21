@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     TextView loginText, PasText;
     String login, Pas;
 
-
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
     PreparedStatement ps = null;
@@ -93,11 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     private void Dialog(String title, String mes) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title).setMessage(mes);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
         alert.show();
     }
