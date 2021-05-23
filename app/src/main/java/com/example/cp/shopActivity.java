@@ -1,7 +1,6 @@
 package com.example.cp;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -58,6 +57,7 @@ public class shopActivity extends AppCompatActivity {
     private TextInputLayout inputLayout;
 
     private int count = 0;
+    private int countSQL = 0;
     public String quantity;
     public String nameItem;
     public String catNum;
@@ -66,14 +66,17 @@ public class shopActivity extends AppCompatActivity {
     boolean hasLogged;
 
     public static final String SHOWQ = "SELECT * FROM STOCK";
+    public static final String COUNTSQL = "SELECT COUNT(Группа) FROM Stock";
     public static final String ADDTOBASKET = "INSERT INTO ShoppingCart (КатНомер, Количество, Дата, Клиент)" +
             " VALUES (?,?,?,(SELECT LoginId FROM LoginData WHERE Login = ?))";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
+    PreparedStatement ps = null;
     PreparedStatement ps1 = null;
     Statement st = null;
     ResultSet rs = null;
+    ResultSet rs1 = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,8 @@ public class shopActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             } else {
+                runOnUiThread(countRows);
+
                 Thread thread = new Thread(showItems);
                 thread.start();
                 Toolbar toolbarShop = findViewById(R.id.toolbar_shop);
@@ -111,47 +116,28 @@ public class shopActivity extends AppCompatActivity {
                 customArrayAdapter = new CustomArrayAdapter(arrayListItem, recyclerView);
                 recyclerView.setAdapter(customArrayAdapter);
 
-                customArrayAdapter.setLoad_more(() -> {
-                    if (arrayListItem.size() <= 50) {
-                        arrayListItem.add(null);
-                        customArrayAdapter.notifyItemChanged(arrayListItem.size() - 1);
-                        new Handler().postDelayed(() -> {
-                            arrayListItem.remove(arrayListItem.size() - 1);
-                            customArrayAdapter.notifyItemRemoved(arrayListItem.size());
-
-                            int index = arrayListItem.size();
-                            int end = index + 10;
-
-                            try {
-                                st = connection.createStatement();
-                                rs = st.executeQuery(SHOWQ);
-
-                                if (rs != null) {
-                                    while (rs.next()) {
-                                        ListItem items = new ListItem();
-
-                                        for (int i = index; i < end; i++) {
-                                            items.setGroup(rs.getString(1).trim());
-                                            items.setBrand(rs.getString(2).trim());
-                                            items.setCatNum(rs.getString(3).trim());
-                                            items.setName(rs.getString(4).trim());
-                                            items.setPrice(rs.getFloat(5));
-                                            items.setAvailable(rs.getString(6).trim());
-                                            arrayListItem.add(items);
-                                        }
-                                    }
-                                }
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-
-                            customArrayAdapter.notifyDataSetChanged();
-                            customArrayAdapter.setLoaded();
-                        }, 3000);
-                    } else {
-                        Toast("End");
+                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(@NonNull @NotNull RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        if (layoutManager.getItemCount() < countSQL) {
+                            Toast("More");
+                        } else {
+                            Toast("End");
+                        }
                     }
                 });
+
+//                customArrayAdapter.setLoad_more(new loadMore() {
+//                    @Override
+//                    public void onLoadMore() {
+//                        if (layoutManager.getItemCount() < countSQL) {
+//                            Toast("More");
+//                        } else {
+//                            Toast("End");
+//                        }
+//                    }
+//                });
             }
         }
     }
@@ -160,8 +146,6 @@ public class shopActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (hasConnection(shopActivity.this)) {
-            customArrayAdapter.notifyDataSetChanged();
-
             customArrayAdapter.setOnClickListener(position -> {
                 nameItem = arrayListItem.get(position).getName();
                 catNum = arrayListItem.get(position).getCatNum();
@@ -232,19 +216,23 @@ public class shopActivity extends AppCompatActivity {
             text.setText(translate);
         });
         btnOK.setOnClickListener(v -> {
-            quantity = text.getText().toString();
-            if (CheckFields(quantity)) {
-                count = Integer.parseInt(text.getText().toString());
-                if (count != 0) {
-                    Thread thread1 = new Thread(addToBasket);
-                    thread1.start();
-                    Toast(nameItem + " добавленно в корзину " + quantity);
-                    dialog.dismiss();
+            if (hasConnection(this)) {
+                quantity = text.getText().toString();
+                if (CheckFields(quantity)) {
+                    count = Integer.parseInt(text.getText().toString());
+                    if (count != 0) {
+                        Thread thread1 = new Thread(addToBasket);
+                        thread1.start();
+                        Toast(nameItem + " добавленно в корзину " + quantity);
+                        dialog.dismiss();
+                    } else {
+                        Toast("Выбранно количество 0");
+                    }
                 } else {
-                    Toast("Выбранно количество 0");
+                    Toast("Пустое поле");
                 }
             } else {
-                Toast("Пустое поле");
+                Snack(getString(R.string.no_ethernet));
             }
         });
 
@@ -268,6 +256,28 @@ public class shopActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
+    Runnable countRows = () -> {
+        try {
+            ps = connection.prepareStatement(COUNTSQL);
+            rs1 = ps.executeQuery();
+
+            if (rs1 != null) {
+                while (rs1.next()) {
+                    countSQL = rs1.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs1 != null) rs1.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+    };
+
     Runnable showItems = new Runnable() {
 
         @Override
@@ -277,19 +287,18 @@ public class shopActivity extends AppCompatActivity {
                 rs = st.executeQuery(SHOWQ);
 
                 if (rs != null) {
-                    int columnCount = rs.getMetaData().getColumnCount();
+
                     while (rs.next()) {
                         ListItem items = new ListItem();
 
-                        for (int i = columnCount; i <= columnCount; i++) {
-                            items.setGroup(rs.getString(1).trim());
-                            items.setBrand(rs.getString(2).trim());
-                            items.setCatNum(rs.getString(3).trim());
-                            items.setName(rs.getString(4).trim());
-                            items.setPrice(rs.getFloat(5));
-                            items.setAvailable(rs.getString(6).trim());
-                            arrayListItem.add(items);
-                        }
+                        items.setGroup(rs.getString(1).trim());
+                        items.setBrand(rs.getString(2).trim());
+                        items.setCatNum(rs.getString(3).trim());
+                        items.setName(rs.getString(4).trim());
+                        items.setPrice(rs.getFloat(5));
+                        items.setAvailable(rs.getString(6).trim());
+                        arrayListItem.add(items);
+
                     }
                 }
             } catch (SQLException e) {
@@ -332,13 +341,6 @@ public class shopActivity extends AppCompatActivity {
         }
     };
 
-    private void Dialog(String title, String mes) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(shopActivity.this);
-        builder.setTitle(title).setMessage(mes);
-        builder.setPositiveButton("OK", (dialog, id) -> dialog.dismiss());
-        builder.show();
-    }
-
     public void Snack(String mes) {
         View viewSnack = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar
@@ -352,16 +354,13 @@ public class shopActivity extends AppCompatActivity {
         assert cm != null;
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiInfo != null && wifiInfo.isConnected()) {
-            Log.d("MyTag", "hasConnection: wifi");
             return true;
         }
         wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if (wifiInfo != null && wifiInfo.isConnected()) {
-            Log.d("MyTag", "hasConnection: mob");
             return true;
         }
         wifiInfo = cm.getActiveNetworkInfo();
-        Log.d("MyTag", "hasConnection: not");
         return wifiInfo != null && wifiInfo.isConnected();
     }
 

@@ -8,7 +8,7 @@
     tools:context=".shopActivity">
 
     <include
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_shop"
         layout="@layout/toolbar_shop"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/brand"
         app:layout_constraintStart_toEndOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shop" />
 
     <TextView
         android:id="@+id/textView4"
@@ -36,7 +36,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/group"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shop" />
 
     <TextView
         android:id="@+id/textView9"
@@ -46,7 +46,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/catNum"
         app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shop" />
 
     <TextView
         android:id="@+id/textView5"
@@ -56,7 +56,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/NameItemTXT"
         app:layout_constraintStart_toEndOf="@+id/textView9"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shop" />
 
     <TextView
         android:id="@+id/textView7"
@@ -66,7 +66,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/PriceItemTXT"
         app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shop" />
 
     <TextView
         android:id="@+id/textView6"
@@ -76,7 +76,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/QuantityItemTXT"
         app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shop" />
 
     <ScrollView
         android:id="@+id/scrollView3"

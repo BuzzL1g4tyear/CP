@@ -1,6 +1,7 @@
 package com.example.cp;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int VIEW_TYPE_ITEM = 0, VIEW_TYPE_LOAD = 1;
     loadMore load_more;
     boolean isLoading;
-    int visible = 5;
+    int visible = 1;
     int lastVisible, totalCount;
 
     private List<ListItem> listItem;
@@ -32,7 +33,7 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         listItem = items;
         listItemCopy = listItem;
 
-        final LinearLayoutManager linearLayoutManager
+        LinearLayoutManager linearLayoutManager
                 = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -42,11 +43,13 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 totalCount = linearLayoutManager.getItemCount();
                 lastVisible = linearLayoutManager.findLastVisibleItemPosition();
                 if (!isLoading && totalCount <= (lastVisible + visible)) {
+                    Log.d("MyTag", "onScrolled: true");
                     if (load_more != null) {
+                        Log.d("MyTag", "onScrolled: more ad");
                         load_more.onLoadMore();
+                        isLoading = true;
                     }
                 }
-                isLoading = true;
             }
         });
     }
