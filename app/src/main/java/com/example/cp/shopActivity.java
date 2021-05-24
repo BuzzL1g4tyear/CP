@@ -121,23 +121,20 @@ public class shopActivity extends AppCompatActivity {
                     public void onScrolled(@NonNull @NotNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         if (layoutManager.getItemCount() < countSQL) {
+                            customArrayAdapter.notifyDataSetChanged();
                             Toast("More");
-                        } else {
-                            Toast("End");
                         }
                     }
                 });
 
-//                customArrayAdapter.setLoad_more(new loadMore() {
-//                    @Override
-//                    public void onLoadMore() {
-//                        if (layoutManager.getItemCount() < countSQL) {
-//                            Toast("More");
-//                        } else {
-//                            Toast("End");
-//                        }
-//                    }
-//                });
+                customArrayAdapter.setLoad_more(new loadMore() {
+                    @Override
+                    public void onLoadMore() {
+                        if (layoutManager.getItemCount() < countSQL) {
+                            Toast("End");
+                        }
+                    }
+                });
             }
         }
     }
@@ -146,6 +143,7 @@ public class shopActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (hasConnection(shopActivity.this)) {
+            customArrayAdapter.notifyDataSetChanged();
             customArrayAdapter.setOnClickListener(position -> {
                 nameItem = arrayListItem.get(position).getName();
                 catNum = arrayListItem.get(position).getCatNum();
