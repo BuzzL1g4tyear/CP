@@ -27,9 +27,7 @@ public class ConnectionHelper {
             StrictMode.setThreadPolicy(policy);
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
             con = DriverManager.getConnection(ConnURL, LOGIN, PAS);
-            Log.d("MyTag", "Подключилось");
         } catch (SQLException | ClassNotFoundException e) {
-            Log.d("MyTag", "Увы");
             e.printStackTrace();
         }
 

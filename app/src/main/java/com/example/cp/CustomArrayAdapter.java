@@ -1,7 +1,5 @@
 package com.example.cp;
 
-import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,9 +41,7 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 totalCount = linearLayoutManager.getItemCount();
                 lastVisible = linearLayoutManager.findLastVisibleItemPosition();
                 if (!isLoading && totalCount <= (lastVisible + visible)) {
-                    Log.d("MyTag", "onScrolled: true");
                     if (load_more != null) {
-                        Log.d("MyTag", "onScrolled: more ad");
                         load_more.onLoadMore();
                         isLoading = true;
                     }

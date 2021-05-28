@@ -1,6 +1,7 @@
 package com.example.cp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,7 +16,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,8 +29,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,25 +50,36 @@ public class BasketActivity extends AppCompatActivity {
 
     private BaskedAdapter baskedAdapter;
     private static final String MY_SETTINGS = "my_settings";
-    String name;
+    String name, catNum, mQuantity;
     java.util.Date utilDate;
     java.sql.Timestamp sqlDate;
-    String catNum;
     RecyclerView basketRV;
     RecyclerView.LayoutManager layoutManager;
+    public Button btnMin, btnPlu, btnOK;
+    public EditText text;
+    private TextInputLayout inputLayout;
 
-    public static final String SHOWBASKETQ = "SELECT Группа, Бренд, ShoppingCart.КатНомер, Наименование, [Ваша цена (BYN c НДС)], Количество " +
+    private int count = 0;
+    public String quantity;
+    public String nameItem;
+
+    public static final String SHOWBASKETQ = "SELECT Группа, Бренд, ShoppingCart.КатНомер, " +
+            "Наименование, [Ваша цена (BYN c НДС)], Количество " +
             "FROM ShoppingCart " +
             "JOIN Stock S ON ShoppingCart.КатНомер = S.КатНомер " +
             "WHERE Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
     public static final String DELETEFROMBASKET = "DELETE FROM ShoppingCart " +
             "WHERE КатНомер = ? AND Клиент = (SELECT LoginId FROM LoginData WHERE Login = ?)";
-    public static final String ADDTOORDER = "INSERT INTO AndroidOrders (CustomerId, OrderStatus, OrderDate)" +
-            " VALUES ((SELECT LoginId FROM LoginData WHERE Login = ?),?,?)";
-    public static final String ADDTOORDERITEM = "INSERT INTO AndroidOrdersItems ( odCode, odName, odQuant, odStatus, odOrderId)" +
-            " VALUES (?,(SELECT Наименование FROM Stock WHERE КатНомер = ?),?,?,?)";
+    public static final String ADDTOORDER = "INSERT INTO AndroidOrders " +
+            "(CustomerId, OrderStatus, OrderDate) " +
+            "VALUES ((SELECT LoginId FROM LoginData WHERE Login = ?),?,?)";
+    public static final String ADDTOORDERITEM = "INSERT INTO AndroidOrdersItems " +
+            "( odCode, odName, odQuant, odStatus, odOrderId) " +
+            "VALUES (?,(SELECT Наименование FROM Stock WHERE КатНомер = ?),?,?,?)";
 
     public static final String ID = "SELECT OrderId FROM AndroidOrders WHERE OrderDate = ?";
+    private static final String UPDSHOPCART = "UPDATE ShoppingCart SET Количество = ? " +
+            "WHERE КатНомер = ?";
 
     ConnectionHelper connect = new ConnectionHelper();
     Connection connection = connect.getCon();
@@ -67,7 +90,8 @@ public class BasketActivity extends AppCompatActivity {
     ResultSet rs1 = null;
 
     private List<ListItem> arrayListItem;
-// TODO: 02.05.2021  delete from basket after create order
+
+    // TODO: 02.05.2021  delete from basket after create order
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +120,18 @@ public class BasketActivity extends AppCompatActivity {
         toolbarBasket.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbarBasket);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        baskedAdapter.setOnClickListener(position -> {
+            nameItem = arrayListItem.get(position).getName();
+            catNum = arrayListItem.get(position).getCatNum();
+            mQuantity = String.valueOf(arrayListItem.get(position).getQuantity());
+
+            openDialog(nameItem);
+        });
     }
 
     Runnable showBasket = new Runnable() {
@@ -134,6 +170,158 @@ public class BasketActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void openDialog(String title) {
+        Dialog dialog = new Dialog(BasketActivity.this, R.style.CustomStyleDialog);
+        LayoutInflater inflater = this.getLayoutInflater();
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.fragment_blank, null);
+
+        text = view.findViewById(R.id.valueNumb);
+        btnMin = view.findViewById(R.id.btnMinus);
+        btnPlu = view.findViewById(R.id.btnPlus);
+        btnOK = view.findViewById(R.id.btnOK);
+
+        inputLayout = view.findViewById(R.id.textInputLayout);
+
+        text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!text.getText().toString().isEmpty()) {
+                    if (text.length() > 9) {
+                        inputLayout.setError("big data");
+                        btnOK.setClickable(false);
+                        btnPlu.setClickable(false);
+                    } else {
+                        inputLayout.setError(null);
+                        btnOK.setClickable(true);
+                        btnPlu.setClickable(true);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        text.setText(mQuantity);
+        btnMin.setOnClickListener(v -> {
+            if (Integer.parseInt(text.getText().toString()) > 0) {
+
+                if (text.getText().toString().trim().isEmpty()) {
+                    text.setText("0");
+                }
+
+                count = Integer.parseInt(text.getText().toString());
+                count = count - 1;
+                String translate = String.valueOf(count);
+                text.setText(translate);
+            } else {
+                Toast("Нельзя выбрать число меньше!");
+            }
+        });
+        btnPlu.setOnClickListener(v -> {
+            count = Integer.parseInt(text.getText().toString());
+            count = count + 1;
+            String translate = String.valueOf(count);
+            text.setText(translate);
+        });
+        btnOK.setOnClickListener(v -> {
+            if (hasConnection(this)) {
+                quantity = text.getText().toString();
+                if (CheckFields(quantity)) {
+                    count = Integer.parseInt(text.getText().toString());
+                    if (count != 0) {
+                        Thread thread1 = new Thread(updBasket);
+                        thread1.start();
+                        Toast(nameItem + " отредактирован " + quantity);
+                        dialog.dismiss();
+                        restartAct();
+                    } else {
+                        Toast("Выбранно количество 0");
+                    }
+                } else {
+                    Toast("Пустое поле");
+                }
+            } else {
+                Snack(getString(R.string.no_ethernet));
+            }
+        });
+
+        dialog.setContentView(view);
+        dialog.setTitle(title);
+        dialog.show();
+    }
+
+    private void restartAct() {
+        Intent intent = new Intent(BasketActivity.this,BasketActivity.class);
+        startActivity(intent);
+    }
+
+    Runnable updBasket = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                ps1 = connection.prepareStatement(UPDSHOPCART);
+
+                ps1.setString(1, quantity);
+                ps1.setString(2, catNum);
+
+                ps1.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (ps1 != null) ps1.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        }
+    };
+
+    public void Snack(String mes) {
+        View viewSnack = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar
+                .make(viewSnack, mes, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(getResources().getColor(R.color.colorWhite));
+        snackbar.show();
+    }
+
+    public static boolean hasConnection(@NotNull final Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        return wifiInfo != null && wifiInfo.isConnected();
+    }
+
+    public boolean CheckFields(String quantity) {
+        boolean field = true;
+
+        if (quantity == null || quantity.isEmpty()) {
+            Toast("Пустое поле");
+            field = false;
+        }
+        return field;
+    }
+
+    private void Toast(String mes) {
+        Toast.makeText(this, mes,
+                Toast.LENGTH_LONG).show();
+    }
 
     ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         @Override
@@ -272,7 +460,7 @@ public class BasketActivity extends AppCompatActivity {
                 Toast.makeText(this, "Заказ отправлен", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.basketOrder:
-                Intent intent = new Intent(BasketActivity.this,OrderFragment.class);
+                Intent intent = new Intent(BasketActivity.this, OrderFragment.class);
                 startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);

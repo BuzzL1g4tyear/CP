@@ -1,14 +1,11 @@
 package com.example.cp;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +17,7 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
 
     private List<ListItem> listItem;
     private List<ListItem> listItemCopy;
+    private OnClickListener mOnClickListener;
 
     public BaskedAdapter(List<ListItem> list) {
         listItem = list;
@@ -47,7 +45,7 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.basket_items, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view,mOnClickListener);
     }
 
     @Override
@@ -59,6 +57,14 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
         holder.bNameItem_TV.setText(listItemMain.getName());
         holder.bPrice_TV.setText(String.valueOf(listItemMain.getPrice()));
         holder.bBrand_TV.setText(String.valueOf(listItemMain.getBrand()));
+    }
+
+    public interface OnClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnClickListener(OnClickListener listener) {
+        mOnClickListener = listener;
     }
 
     @Override
@@ -75,7 +81,7 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
         TextView bBrand_TV;
         TextView bPrice_TV;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view,final  OnClickListener listener) {
             super(view);
 
             bGroup_TV = view.findViewById(R.id.bGroup_TV);
@@ -84,7 +90,20 @@ public class BaskedAdapter extends RecyclerView.Adapter<BaskedAdapter.ViewHolder
             bNameItem_TV = view.findViewById(R.id.bNameItem_TV);
             bPrice_TV = view.findViewById(R.id.bPrice_TV);
             bBrand_TV = view.findViewById(R.id.bBrand_TV);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
+
     }
 }
 
