@@ -120,16 +120,6 @@ public class shopActivity extends AppCompatActivity {
                         super.onScrolled(recyclerView, dx, dy);
                         if (layoutManager.getItemCount() < countSQL) {
                             customArrayAdapter.notifyDataSetChanged();
-                            Toast("More");
-                        }
-                    }
-                });
-
-                customArrayAdapter.setLoad_more(new loadMore() {
-                    @Override
-                    public void onLoadMore() {
-                        if (layoutManager.getItemCount() < countSQL) {
-                            Toast("End");
                         }
                     }
                 });

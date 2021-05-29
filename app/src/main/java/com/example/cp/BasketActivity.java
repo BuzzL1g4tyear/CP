@@ -91,7 +91,6 @@ public class BasketActivity extends AppCompatActivity {
 
     private List<ListItem> arrayListItem;
 
-    // TODO: 02.05.2021  delete from basket after create order
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
